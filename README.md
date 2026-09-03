@@ -1,0 +1,3 @@
+# Penn State Abington Ridesharing App
+
+A number of Penn State Abington students lack consistent access to a car and/or easy access to public transportation. In some instances, students have resorted to regular Uber use, which can be cost-prohibitive. We are seeking a ride-share app, that would be limited to the PSU Abington Community. The app would allow drivers and riders to identify one another based on location and timing. Drivers could include conditions (i.e. time parameters, expected payment mode and amount, cost differential for set meeting place and/or for door to door) and riders could post the same in terms of need. Payment mechanism would not be included within the app, but parties can choose acceptable payment methods (Venmo, Zelle, cash, gas, etc.).
