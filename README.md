@@ -2,33 +2,39 @@
 
 A number of Penn State Abington students lack consistent access to a car and/or easy access to public transportation. In some instances, students have resorted to regular Uber use, which can be cost-prohibitive. We are seeking a ride-share app, that would be limited to the PSU Abington Community. The app would allow drivers and riders to identify one another based on location and timing. Drivers could include conditions (i.e. time parameters, expected payment mode and amount, cost differential for set meeting place and/or for door to door) and riders could post the same in terms of need. Payment mechanism would not be included within the app, but parties can choose acceptable payment methods (Venmo, Zelle, cash, gas, etc.).
 
-## Local Setup
+## Getting Started
 
-### Repo
-
-- Clone the repo
-  - git clone <https://github.com/WillMirabella/487W_Group3.git>
-  - NOTE THIS WILL CHANGE WHEN REPO NAME CHANGES
-- Confirm repo creation
-  - git status
-  - Should see 'On branch main'
-- Checkout a branch for your task
-  - use following template for branch names
-  - name/task#/description-of-task
-  - ex. git checkout -b will/task21/design-user-card
-
-### Frontend
-
-- Prerequisites
+**1. Install prerequisites**
   - Node.js
-    - check by using
-      - node --version
-  - Expo Go
-    - Phone app that will let us test the app using our own phones
+  - Expo Go (Mobile app that enables testing on device)
 
-- cd frontend
-- npm install
-- npx expo start
+> [!TIP]
+> Confirm Node.js is installed using `node --version`.
+
+**2. Clone the repository**
+```sh
+git clone https://github.com/WillMirabella/487W_Group3.git
+```
+> [!IMPORTANT]  
+> The URL will change when [#2](https://github.com/WillMirabella/487W_Group3/issues/2) is completed.
+
+> [!TIP]
+> Confirm successful clone using `git status`, which should return `On branch main`.
+
+**3. Checkout a branch task**
+```sh
+git checkout -b name/task#/description-of-task
+```
+> [!NOTE]  
+> An example of the template in use is _will/task21/design-user-card_.
+
+**4. Run app**
+
+```sh
+cd frontend
+npm install
+npx expo start
+```
 
 ## Documents
 
