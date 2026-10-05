@@ -96,11 +96,3 @@ class User:
     # Adds a newly created user to the db (return the user_id that is chosen to use in constructor)
     def to_db(self):
         return 1
-    
-User1 = User("John", "Doe", "1234567890", "john.doe@example.com", "Male", "I am a student", 2025, "Computer Science")
-print(User1)
-
-User1.set_availability(True, 0, 1, 3)
-User1.set_availability(False, 0, 2, 4)
-User1.set_availability(None, 0, 1.5, 2.5)
-print(User1)
