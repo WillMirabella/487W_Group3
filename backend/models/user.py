@@ -1,7 +1,8 @@
-from car import Car
+from models.car import Car
+import db
 
 class User:
-    def __init__(self, first_name, last_name, phone, email, gender, description, grad_year, major):
+    def __init__(self, id, first_name, last_name, phone, email, gender, description, grad_year, major, schedule):
         self.first_name = first_name
         self.last_name = last_name
         self.phone = phone
@@ -10,13 +11,13 @@ class User:
         self.description = description
         self.grad_year = grad_year
         self.major = major
-
+        if(schedule==None): self.schedule = [[None] * 48 for _ in range(5)] # Empty schedule
+        else: self.schedule=schedule
         self.address = None
         self.preferred_payment = None
-        self.schedule = [[None] * 48 for _ in range(5)] # Empty schedule
-        self.car_id = None # Foreign Key
-
-        self.user_id = self.to_db() # Primary Key
+        self.car_id = None
+        if(id == None): self.id = self.to_db() # Primary Key
+        else: self.id = id
 
     def __str__(self):
         # Format schedule
@@ -31,7 +32,7 @@ class User:
                     result.append(f"\t\t{hour:02d}:{minute:02d} - {"Mandatory" if self.schedule[day_index][slot_index] else "Optional"}")
         schedule_str = "\n" + "\n".join(result)
 
-        return ("user_id: " + str(self.user_id) +
+        return ("id: " + str(self.id) +
               "\nfirst_name: " + self.first_name +
               "\nlast_name: " + self.last_name +
               "\nphone: " + str(self.phone) +
@@ -44,16 +45,16 @@ class User:
               "\naddress: " + str(self.address) +
               "\npreferred_payment: " + str(self.preferred_payment) +
               "\nschedule: " + schedule_str +
-
               "\ncar_id: " + str(self.car_id))
 
 
-    # Promotes a user to a driver by filling in extra fields
-    def make_driver(self, address, preferred_payment, schedule, make, model, color, year, capacity):
+    # Promotes a user to a driver by filling in extra fields and links a user to a specified car
+    def make_driver(self, address, preferred_payment,car_id):
         self.address = address
         self.preferred_payment = preferred_payment
-        self.schedule = schedule
-        self.car_id = Car(make,model,color,year,capacity, self.user_id).car_id
+        self.car_id = car_id
+
+        db.update_user(self)
 
     
     def set_availability(self, available, weekday, start_time, end_time):
@@ -86,13 +87,14 @@ class User:
         for i in range(start_slot, end_slot):
             self.schedule[weekday][i] = available
 
-    # Needs implementation
     # Creates a user object from a row of the db
     @classmethod
-    def from_db(cls):
-        return
+    def from_db(cls, id):
+        row = db.get_user_by_id(id)
+        new_user = User(row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8], row[9])
+        if(car_id!=None): new_user.make_driver(row[10], row[11], row[12], row[13])
+        return new_user
 
-    # Needs implementation
-    # Adds a newly created user to the db (return the user_id that is chosen to use in constructor)
+    # Adds a newly created user to the db and returns its id
     def to_db(self):
-        return 1
+        return db.insert_user(self)
