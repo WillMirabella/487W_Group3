@@ -48,6 +48,25 @@ def create_relations():
             preferred_payment VARCHAR(100),
             car_id INTEGER REFERENCES cars(id)
         );
+        CREATE TABLE IF NOT EXISTS contacts (
+            id SERIAL PRIMARY KEY,
+            sender INTEGER REFERENCES users(id),
+            receiver INTEGER REFERENCES users(id),
+            method VARCHAR(100),
+            datetime VARCHAR(100)
+        );
+    """
+    conn = get_connection()
+    curr = conn.cursor()
+    curr.execute(query)
+    conn.commit()
+    conn.close()
+
+# Deletes all relations, use with caution
+def clear_relations():
+    query = """
+        DROP SCHEMA public CASCADE;
+        CREATE SCHEMA public;
     """
     conn = get_connection()
     curr = conn.cursor()
@@ -140,6 +159,38 @@ def get_car_by_id(id):
     query = """
             SELECT * 
             FROM cars 
+            WHERE id = %s;
+        """
+    conn = get_connection()
+    curr = conn.cursor()
+    curr.execute(query,(id,))
+    row = curr.fetchone()
+    conn.close()
+
+    return row
+
+# Inserts a new contact into the contacts relation and returns the new id
+def insert_contact(sender, receiver, method, datetime):
+    query = """
+        INSERT INTO contacts (sender, receiver, method, datetime) 
+        VALUES (%s, %s, %s, %s)
+        RETURNING id, sender, receiver, method
+    """
+    new_contact_data = (sender, receiver, method, datetime)
+
+    conn = get_connection()
+    curr = conn.cursor()
+    curr.execute(query,new_contact_data)
+    conn.commit()
+    new_id=curr.fetchone()[0]
+    conn.close()
+    return new_id
+
+# Returns the data of the row in contacts with the specified id
+def get_contact_by_id(id):
+    query = """
+            SELECT * 
+            FROM contacts 
             WHERE id = %s;
         """
     conn = get_connection()
