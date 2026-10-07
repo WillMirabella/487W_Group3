@@ -19,8 +19,11 @@ We will be using Expo for development of React Native.
 The app starts through `index.ts`, which loads Expo Router. The bottom tabs in
 `src/app/_layout.tsx` follow the UML: **Find Drivers**, **Map**, and **Profile**.
 `src/app/index.tsx` is the default Find Drivers screen; `map.tsx` and `profile.tsx`
-are the other screens. Replace each placeholder independently as its feature is
-implemented. Shared presentation lives in `components/PlaceholderScreen.tsx`.
+are the other screens. Each screen contains its own simple placeholder layout and styles.
+The function names match the UML: `NavBar`, `FindDrivers`, `MapDisplay`, and
+`ProfilePage`. The tab labels remain Find Drivers, Map, and Profile.
+The white background and blue accents follow the UML's light-mode theme.
+Search/UserCard, MapWidget, and profile editing are future work.
 The original `App.tsx` starter is no longer the app entry point.
 
 These screens do not fetch users, render routes, or save profile information yet.
@@ -31,6 +34,6 @@ These screens do not fetch users, render routes, or save profile information yet
 - Run `npm run lint` and `npm run typecheck`.
 - Run `npx expo start`, then open the app in Expo Go.
 - Confirm Find Drivers appears first. Tap Map, Profile, and Find Drivers and
-  confirm the title, message, and highlighted tab change together.
+  confirm the screen title and selected tab change together.
 - Check that the tab bar stays visible and content is readable on a small screen.
 - For browser preview, run `npm run web`.
