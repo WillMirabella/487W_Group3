@@ -13,12 +13,23 @@ class User:
 
         self.address = None
         self.preferred_payment = None
-        self.schedule = None
+        self.schedule = [None] * 5 # List of tuples (start_time, end_time) for each weekday (0=Monday, 4=Friday)
         self.car_id = None # Foreign Key
 
         self.user_id = self.to_db() # Primary Key
 
     def __str__(self):
+        # Format schedule
+        DAYS = ["monday", "tuesday", "wednesday", "thursday", "friday"]
+        result = []
+        for day_index, day in enumerate(DAYS):
+            if self.schedule[day_index] is not None:
+                start_time, end_time = self.schedule[day_index]
+                result.append(f"\t{day}: {start_time} - {end_time}")
+
+        schedule_str = "\n" if result else str(None)
+        schedule_str += "\n".join(result)
+
         return ("user_id: " + str(self.user_id) +
               "\nfirst_name: " + self.first_name +
               "\nlast_name: " + self.last_name +
@@ -31,7 +42,7 @@ class User:
 
               "\naddress: " + str(self.address) +
               "\npreferred_payment: " + str(self.preferred_payment) +
-              "\nschedule: " + str(self.schedule) +
+              "\nschedule: " + schedule_str +
 
               "\ncar_id: " + str(self.car_id))
 
@@ -42,6 +53,17 @@ class User:
         self.preferred_payment = preferred_payment
         self.schedule = schedule
         self.car_id = Car(make,model,color,year,capacity, self.user_id).car_id
+
+    
+    def set_day_schedule(self, day_index, start_time, end_time):
+        if day_index < 0 or day_index > 4:
+            raise ValueError("day_index must be between 0 and 4 (inclusive)")
+        elif start_time >= end_time:
+            raise ValueError("start_time must be less than end_time")
+        elif start_time < 0 or start_time > 24 or end_time < 0 or end_time > 24:
+            raise ValueError("start_time and end_time must be between 0 and 24 (inclusive)")
+
+        self.schedule[day_index] = (start_time, end_time)
 
     # Needs implementation
     # Creates a user object from a row of the db
