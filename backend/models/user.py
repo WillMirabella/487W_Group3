@@ -24,13 +24,12 @@ class User:
         DAYS = ["monday", "tuesday", "wednesday", "thursday", "friday"]
         result = []
         for day_index, day in enumerate(DAYS):
-            result.append(f"\t{day}:")
-            for slot_index in range(48):
-                if self.schedule[day_index][slot_index] is not None:
-                    hour = slot_index // 2
-                    minute = (slot_index % 2) * 30
-                    result.append(f"\t\t{hour:02d}:{minute:02d} - {"Mandatory" if self.schedule[day_index][slot_index] else "Optional"}")
-        schedule_str = "\n" + "\n".join(result)
+            if self.schedule[day_index] is not None:
+                start_time, end_time = self.schedule[day_index]
+                result.append(f"\t{day}: {start_time} - {end_time}")
+
+        schedule_str = "\n" if result else str(None)
+        schedule_str += "\n".join(result)
 
         return ("id: " + str(self.id) +
               "\nfirst_name: " + self.first_name +
@@ -56,35 +55,15 @@ class User:
         db.update_user(self)
 
     
-    def set_availability(self, available, weekday, start_time, end_time):
-        """
-        Sets the availability of the user for a specific day and time range.
+    def set_day_schedule(self, day_index, start_time, end_time):
+        if day_index < 0 or day_index > 4:
+            raise ValueError("day_index must be between 0 and 4 (inclusive)")
+        elif start_time >= end_time:
+            raise ValueError("start_time must be less than end_time")
+        elif start_time < 0 or start_time > 24 or end_time < 0 or end_time > 24:
+            raise ValueError("start_time and end_time must be between 0 and 24 (inclusive)")
 
-        :param available: True for mandatory, False for optional, None for unavailable
-        :param weekday: Integer representing the day of the week (0=Monday, 4=Friday)
-        :param start_time: Start time in hours (0-24)
-        :param end_time: End time in hours (0-24)
-        """
-        # Time validity checks
-        if start_time >= end_time:
-            raise ValueError("Start time must be less than end time")
-        elif start_time < 0 or end_time > 24:
-            raise ValueError("Start time and end time must be between 0 and 24")
-        elif start_time == end_time:
-            raise ValueError("Start time and end time cannot be the same")
-        elif start_time % .5 != 0 or end_time % .5 != 0:
-            raise ValueError("Start time or end time too precise")
-        # Weekday validity check
-        elif weekday < 0 or weekday > 4:
-            raise ValueError("Weekday must be between 0 and 4 (0=Monday, 4=Friday)")
-
-        # Convert hours to half-hour slots
-        start_slot = int(start_time * 2)
-        end_slot = int(end_time * 2)
-
-        # Set the availability for the specified time slots
-        for i in range(start_slot, end_slot):
-            self.schedule[weekday][i] = available
+        self.schedule[day_index] = (start_time, end_time)
 
     # Creates a user object from a row of the db
     @classmethod
