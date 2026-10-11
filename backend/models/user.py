@@ -11,7 +11,7 @@ class User:
         self.description = description
         self.grad_year = grad_year
         self.major = major
-        if(schedule==None): self.schedule = [[None] * 48 for _ in range(5)] # Empty schedule
+        if(schedule==None): self.schedule = [None] * 5 # List of tuples (start_time, end_time) for each weekday (0=Monday, 4=Friday)
         else: self.schedule=schedule
         self.address = None
         self.preferred_payment = None
@@ -41,7 +41,6 @@ class User:
               "\ndescription: " + self.description +
               "\ngrad_year: " + str(self.grad_year) +
               "\nmajor: " + self.major +
-
               "\naddress: " + str(self.address) +
               "\npreferred_payment: " + str(self.preferred_payment) +
               "\nschedule: " + schedule_str +

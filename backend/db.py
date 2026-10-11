@@ -43,7 +43,7 @@ def create_relations():
             description VARCHAR(100),
             grad_year INTEGER,
             major VARCHAR(100),
-            schedule TEXT,
+            schedule VARCHAR(100),
             address VARCHAR(100),
             preferred_payment VARCHAR(100),
             car_id INTEGER REFERENCES cars(id)
