@@ -1,6 +1,6 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { ScrollView, Text, View } from 'react-native';
-import { screenStyles as styles } from '../styles/screenStyles';
+import { screenStyles as styles } from '../constants/screen-styles';
 
 type Props = {
   icon: 'car-outline' | 'map-outline' | 'person-outline';

@@ -1,6 +1,6 @@
-import PlaceholderScreen from './PlaceholderScreen';
+import PlaceholderScreen from "../components/placeholder-screen";
 
-export default function ProfilePage() {
+export default function ProfileScreen() {
   return (
     <PlaceholderScreen
       icon="person-outline"

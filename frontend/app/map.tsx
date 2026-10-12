@@ -1,6 +1,6 @@
-import PlaceholderScreen from './PlaceholderScreen';
+import PlaceholderScreen from "../components/placeholder-screen";
 
-export default function MapDisplay() {
+export default function MapScreen() {
   return (
     <PlaceholderScreen
       icon="map-outline"
