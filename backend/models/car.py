@@ -1,30 +1,32 @@
+import db
+
 class Car:
-    def __init__(self, make, model, color, year, capacity, user_id):
+    def __init__(self, id, make, model, color, year, capacity):
         self.make = make
         self.model = model
         self.color = color
         self.year = year
         self.capacity = capacity
-        self.user_id = user_id # Foreign Key
 
-        self.car_id = self.to_db() # Primary Key
+        if(id == None): self.id = self.to_db() # Primary Key
+        else: self.id = id
     
     def __str__(self):
-        return ("car_id: " + str(self.car_id) +
+        return ("id: " + str(self.id) +
               "\nmake: " + self.make +
               "\nmodel: " + self.model +
               "\ncolor: " + self.color +
               "\nyear: " + str(self.year) +
-              "\ncapacity: " + str(self.capacity) +
-              "\nuser_id: " + str(self.user_id))
+              "\ncapacity: " + str(self.capacity))
 
-    # Needs implementation
     # Creates a car object from a row of the db
     @classmethod
-    def from_db(cls, row):
-        return
+    def from_db(cls, id):
+        row = db.get_car_by_id(id)
+        if(row==None): return None
+        new_car = Car(row[0], row[1], row[2], row[3], row[4], row[5])
+        return new_car
 
-    # Needs implementation
-    # Adds a newly created car to the db (return the car_id that is chosen to use in constructor)
+    # Adds a newly created car to the db and returns its id
     def to_db(self):
-        return 1
+        return db.insert_car(self)
