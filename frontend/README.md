@@ -17,22 +17,26 @@ We will be using Expo for development of React Native.
 ### Navigation
 
 `frontend/index.ts` starts Expo Router; it is the entry point configured in
-`package.json`. `src/app/index.tsx` is a different file: it redirects the root
+`package.json`. `app/index.tsx` is a different file: it redirects the root
 route `/` to `/find-drivers` and is hidden from the tab bar.
 
-`src/app/_layout.tsx` defines `NavBar`, with **Find Drivers**, **Map**, and **Profile**
-tabs. Each tab's title is also its screen header. The route files
-`find-drivers.tsx`, `map.tsx`, and `profile.tsx` export the UML screen components
-`FindDrivers`, `MapDisplay`, and `ProfilePage` from `components/`.
+`app/_layout.tsx` defines `NavBar`, with **Find Drivers**, **Map**, and **Profile**
+tabs. Each tab's title is also its screen header. Each route file contains its
+screen component directly:
 
-The screens share `components/PlaceholderScreen.tsx` and
-`styles/screenStyles.ts`. Update those files to change all placeholder cards.
-Replace each screen component when its feature is ready. Driver search/UserCard,
-MapWidget, and profile editing are future work.
+- `app/find-drivers.tsx` defines `FindDriversScreen`.
+- `app/map.tsx` defines `MapScreen`.
+- `app/profile.tsx` defines `ProfileScreen`.
+
+The screens share `components/placeholder-screen.tsx` and
+`constants/screen-styles.ts`. Update those files to change all placeholder cards.
+Build each feature in its route file and keep reusable components in
+`components/`, which also contains `user-card.tsx`. Driver search, the interactive
+map, and profile editing are future work.
 
 The tab bar's height includes the device's bottom safe area so controls stay
 above the home indicator. It does not add a separate minimum-height gap.
-The original `App.tsx` starter is no longer the app entry point.
+The unused `App.tsx` starter has been removed.
 
 Keep `package-lock.json` committed alongside dependency changes. It records exact
 versions for consistent installs across teammates and supports `npm ci`.
