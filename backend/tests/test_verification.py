@@ -15,7 +15,7 @@ from verification import (
 )
 
 
-# ---------------------------------------------------------------- validation
+# validation tests
 
 @pytest.mark.parametrize("raw, expected", [
     ("abc123@psu.edu", "abc123@psu.edu"),
@@ -41,7 +41,7 @@ def test_allowed_domains_are_configurable():
     assert normalize_psu_email("x@cse.psu.edu", ("psu.edu", "cse.psu.edu")) == "x@cse.psu.edu"
 
 
-# ---------------------------------------------------------------- happy path
+# happy path tests
 
 def test_request_then_verify(service, sender, store):
     sent = service.request_code("ABC123@psu.edu")
@@ -84,7 +84,7 @@ def test_codes_are_bound_to_their_email(service, sender, clock):
         service.verify("bbb222@psu.edu", code_a)
 
 
-# ---------------------------------------------------------------- guessing
+# guessing tests
 
 def test_wrong_codes_count_down_then_lock(service, sender):
     service.request_code("abc123@psu.edu")
@@ -127,7 +127,7 @@ def test_verify_without_request(service):
         service.verify("abc123@psu.edu", "123456")
 
 
-# ---------------------------------------------------------------- expiry
+# expiry tests
 
 def test_code_expires_after_ten_minutes(service, sender, clock):
     service.request_code("abc123@psu.edu")
@@ -145,7 +145,7 @@ def test_code_valid_just_before_expiry(service, sender, clock):
     assert service.verify("abc123@psu.edu", sender.last_code())
 
 
-# ---------------------------------------------------------------- send limits
+# send limits tests
 
 def test_resend_cooldown(service, clock):
     service.request_code("abc123@psu.edu")
@@ -201,7 +201,7 @@ def test_rate_limited_request_keeps_existing_code(service, sender, clock):
     assert service.verify("abc123@psu.edu", code)
 
 
-# ---------------------------------------------------------------- delivery
+# delivery tests
 
 def test_failed_send_raises_and_still_counts(service, sender, clock):
     sender.fail = True
@@ -222,16 +222,15 @@ def test_invalid_email_sends_nothing(service, sender):
     assert sender.messages == []
 
 
-# ---------------------------------------------------------------- randomness
+# randomness tests
 
 def test_codes_are_zero_padded_and_spread_out(service, sender, clock):
-    """Sanity check on the generator over many draws (not a proof of uniformity):
-    every code is exactly 6 digits, and leading digits 0-9 all appear."""
+    # every code should be 6 digits and all 10 leading digits should show up
+    # (chance a digit never leads in 400 tries is 0.9**400, basically zero)
     leading = set()
     for i in range(400):
         service.request_code(f"u{i}@psu.edu")
         code = sender.last_code()
         assert re.fullmatch(r"\d{6}", code)
         leading.add(code[0])
-    # P(a given digit never leads in 400 draws) = 0.9**400 ~ 5e-19.
     assert leading == set("0123456789")

@@ -1,13 +1,6 @@
-"""
-Sending email (issue #18).
-
-Two senders:
-  * ConsoleEmailSender prints the email to the server terminal. It is the
-    default, so you can test sign-up without any email account.
-  * SmtpEmailSender sends real email through any SMTP server. Gmail, Brevo,
-    Mailgun and Resend all offer SMTP, so switching providers only means
-    changing environment variables (see backend/docs/email-service.md, #17).
-"""
+# Sending emails (issue #18)
+# ConsoleEmailSender just prints the email, SmtpEmailSender actually sends it
+# Any provider with SMTP works (Gmail, Brevo, Mailgun, Resend), see docs/email-service.md
 
 from __future__ import annotations
 
@@ -26,11 +19,13 @@ class EmailDeliveryError(Exception):
     pass
 
 
+# Anything with a send() that raises EmailDeliveryError when it fails
 class EmailSender(Protocol):
     def send(self, message: EmailMessage) -> None:
-        """Send the message, or raise EmailDeliveryError."""
+        ...
 
 
+# Builds the verification email with a plain text and an html version
 def build_verification_email(to: str, from_address: str, code: str, ttl_minutes: int) -> EmailMessage:
     message = EmailMessage()
     message["Subject"] = f"{code} is your LionLift verification code"
@@ -76,9 +71,8 @@ def build_verification_email(to: str, from_address: str, code: str, ttl_minutes:
     return message
 
 
+# Prints emails to the terminal instead of sending them, for local testing
 class ConsoleEmailSender:
-    """Prints emails instead of sending them. Development only."""
-
     def send(self, message: EmailMessage) -> None:
         body = message.get_body(preferencelist=("plain",))
         text = body.get_content() if body is not None else ""
@@ -91,6 +85,7 @@ class ConsoleEmailSender:
         )
 
 
+# Sends through an SMTP server
 @dataclass
 class SmtpEmailSender:
     host: str
@@ -121,6 +116,7 @@ class SmtpEmailSender:
             raise EmailDeliveryError(f"{type(exc).__name__}: {exc}") from exc
 
 
+# Picks console or smtp based on EMAIL_BACKEND
 def build_sender_from_env(env) -> EmailSender:
     kind = env.get("EMAIL_BACKEND", "console").lower()
     if kind == "console":

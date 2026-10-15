@@ -22,8 +22,8 @@ def get_connection():
         print("Connection to PostgreSQL failed.")
         return False
 
-# Email verification state, one row per address (see verification.py, issue #12).
-# code_hash is an HMAC-SHA256 hex digest (64 chars); the code itself is never stored.
+# Table for email verification, one row per email (see verification.py)
+# code_hash is the hashed code, the actual code is never stored
 EMAIL_VERIFICATIONS_DDL = """
         CREATE TABLE IF NOT EXISTS email_verifications (
             email VARCHAR(254) PRIMARY KEY,

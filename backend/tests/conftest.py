@@ -11,6 +11,7 @@ from email_sender import EmailDeliveryError  # noqa: E402
 from verification import InMemoryVerificationStore, VerificationService  # noqa: E402
 
 
+# Clock we can move forward by hand in tests
 class FakeClock:
     def __init__(self):
         self.t = datetime(2026, 10, 14, 12, 0, tzinfo=timezone.utc)
@@ -22,9 +23,8 @@ class FakeClock:
         self.t += timedelta(**kwargs)
 
 
+# Fake sender that saves messages instead of sending, can be set to fail
 class CapturingSender:
-    """Records sent messages; can be told to fail."""
-
     def __init__(self):
         self.messages = []
         self.fail = False

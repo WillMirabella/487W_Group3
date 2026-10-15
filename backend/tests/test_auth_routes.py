@@ -71,7 +71,7 @@ def test_delivery_failure_is_503(client, sender):
 
 
 def test_real_app_module_starts_with_defaults(monkeypatch, capsys):
-    """app.py with no environment set: in-memory store and console emails."""
+    # app.py with no environment set: in-memory store and console emails.
     for key in ("VERIFICATION_STORE", "EMAIL_BACKEND", "VERIFICATION_SECRET"):
         monkeypatch.delenv(key, raising=False)
     import importlib

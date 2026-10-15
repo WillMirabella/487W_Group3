@@ -60,7 +60,7 @@ def _free_port():
 
 
 def test_real_smtp_round_trip():
-    """Send through a real SMTP server running in this process."""
+    # Send through a real SMTP server running in this process.
     aiosmtpd = pytest.importorskip("aiosmtpd.controller")
     from aiosmtpd.handlers import Message
 

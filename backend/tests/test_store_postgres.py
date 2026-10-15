@@ -1,11 +1,9 @@
-"""
-Runs the Postgres store against a real database. Skipped unless
-TEST_DATABASE_URL is set, for example:
-
-    TEST_DATABASE_URL=postgresql://postgres:password@127.0.0.1:5432/postgres
-
-WARNING: drops and recreates the email_verifications table in that database.
-"""
+# Runs the Postgres store against a real database. Skipped unless
+# TEST_DATABASE_URL is set, for example:
+#
+# TEST_DATABASE_URL=postgresql://postgres:password@127.0.0.1:5432/postgres
+#
+# WARNING: drops and recreates the email_verifications table in that database.
 
 import os
 import threading
@@ -61,9 +59,8 @@ def test_attempts_persist_across_calls(pg_service, pg_store, sender):
 
 
 def test_concurrent_guesses_cannot_exceed_limit(pg_service, sender):
-    """20 threads guess wrong at the same moment. Row locking serializes them,
-    so exactly 4 get IncorrectCode, 1 gets TooManyAttempts, and the other 15
-    find no pending code."""
+    # 20 threads guess wrong at the same time, the row lock should make them go one at a time
+    # so 4 get IncorrectCode, 1 gets TooManyAttempts, and the other 15 find no code left
     from verification import IncorrectCode, NoPendingCode, TooManyAttempts
     pg_service.request_code("abc123@psu.edu")
     wrong = f"{(int(sender.last_code()) + 1) % 10**6:06d}"

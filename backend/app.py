@@ -8,9 +8,8 @@ app = Flask(__name__)
 app.register_blueprint(example_bp)
 app.register_blueprint(auth_bp)
 
-# Email verification (issue #12). Configured with environment variables;
-# see backend/.env.example. With none set it keeps codes in memory and
-# prints emails to this terminal, so it works without Postgres or SMTP.
+# email verification (issue #12), settings come from .env (see .env.example)
+# with no .env it keeps codes in memory and prints emails here, so no db or email account needed
 app.extensions["verification_service"] = build_service_from_env()
 
 @app.route("/")

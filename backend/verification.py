@@ -1,36 +1,5 @@
-"""
-Penn State email verification (issue #12).
-
-Flow
-----
-1. The app POSTs an email to /api/auth/request-code.
-2. We check it is a Penn State address, generate a random 6-digit code,
-   store only a keyed hash of it, and email the code to the address.
-3. The user types the code into the app, which POSTs it to /api/auth/verify.
-4. If the code matches, is not expired, and the attempt limit has not been
-   reached, the address is marked verified (verified_at is set).
-
-Security parameters (see VerificationConfig for the values)
------------------------------------------------------------
-Let N = 10**code_length (number of possible codes), k = max_attempts
-(guesses allowed per code) and m = max_sends_per_window (codes that can be
-issued for one address per window).
-
-A code is drawn uniformly from {0, ..., N-1} with the `secrets` CSPRNG.
-Someone who does not have access to the inbox and makes j distinct guesses
-against one code succeeds with probability exactly j/N, so at most k/N per
-code. Over one window at most m codes exist, so by the union bound
-
-    P(success in one window) <= m * k / N
-
-With the defaults (N = 10**6, k = 5, m = 5, window = 1 hour) that is
-2.5e-5 per address per hour.
-
-Codes are stored as HMAC-SHA256(secret, email || 0x00 || code). A plain hash
-would be useless: with only 10**6 possible codes, anyone who reads the table
-could try all of them in well under a second. With the secret key, the table
-alone does not reveal the code.
-"""
+# PSU email verification (issue #12)
+# Flow: request a code -> code gets emailed -> user sends the code back to verify
 
 from __future__ import annotations
 
@@ -52,35 +21,22 @@ from email_sender import EmailDeliveryError, EmailSender, build_verification_ema
 log = logging.getLogger(__name__)
 
 
-# --------------------------------------------------------------------------
-# Email address validation
-# --------------------------------------------------------------------------
-
 DEFAULT_ALLOWED_DOMAINS = ("psu.edu",)
 
-# RFC 5322 "dot-atom" local part: atoms of allowed characters joined by single
-# dots, with no leading, trailing, or consecutive dots.
+# Valid characters for the part before the @, dots allowed but not at the ends or doubled
 _ATOM = r"[A-Za-z0-9!#$%&'*+/=?^_`{|}~-]+"
 _LOCAL_PART = re.compile(rf"^{_ATOM}(?:\.{_ATOM})*$")
 
-MAX_LOCAL_PART_LENGTH = 64  # RFC 5321, section 4.5.3.1.1
-MAX_ADDRESS_LENGTH = 254  # RFC 5321 path limit minus the angle brackets
+MAX_LOCAL_PART_LENGTH = 64
+MAX_ADDRESS_LENGTH = 254
 
 
 class InvalidEmail(ValueError):
     pass
 
 
+# Lowercases and trims the email, raises InvalidEmail if it isn't a valid psu.edu address
 def normalize_psu_email(raw: object, allowed_domains=DEFAULT_ALLOWED_DOMAINS) -> str:
-    """Return the address lowercased and trimmed, or raise InvalidEmail.
-
-    The address is accepted only if all of these hold:
-      * it has exactly one "@",
-      * the domain is exactly one of `allowed_domains` (so "x@psu.edu" passes
-        but "x@cse.psu.edu" and "x@psu.edu.evil.com" do not),
-      * the local part is a valid dot-atom of at most 64 characters,
-      * the whole address is at most 254 characters.
-    """
     if not isinstance(raw, str):
         raise InvalidEmail("Email must be a string.")
     email = raw.strip().lower()
@@ -89,6 +45,7 @@ def normalize_psu_email(raw: object, allowed_domains=DEFAULT_ALLOWED_DOMAINS) ->
     if email.count("@") != 1:
         raise InvalidEmail("Enter a valid email address.")
     local, domain = email.split("@")
+    # exact match, so subdomains like cse.psu.edu or psu.edu.evil.com don't pass
     if domain not in allowed_domains:
         allowed = ", ".join("@" + d for d in allowed_domains)
         raise InvalidEmail(f"Use your Penn State email ({allowed}).")
@@ -96,10 +53,6 @@ def normalize_psu_email(raw: object, allowed_domains=DEFAULT_ALLOWED_DOMAINS) ->
         raise InvalidEmail("Enter a valid email address.")
     return email
 
-
-# --------------------------------------------------------------------------
-# Configuration and stored state
-# --------------------------------------------------------------------------
 
 @dataclass(frozen=True)
 class VerificationConfig:
@@ -112,11 +65,11 @@ class VerificationConfig:
     allowed_domains: tuple = DEFAULT_ALLOWED_DOMAINS
 
 
+# One of these per email address
 @dataclass
 class VerificationRecord:
-    """One row per email address."""
     email: str
-    code_hash: Optional[str] = None  # None means there is no pending code
+    code_hash: Optional[str] = None  # None = no code waiting
     expires_at: Optional[datetime] = None
     attempts: int = 0
     last_sent_at: Optional[datetime] = None
@@ -131,23 +84,17 @@ class VerificationRecord:
 
 
 class VerificationStore(Protocol):
+    # Gives back the record for an email and locks it until the with block ends
+    # Changes get saved if the block finishes, and thrown out if it raises
     def locked(self, email: str) -> ContextManager[VerificationRecord]:
-        """Yield the record for `email`, creating an empty one if needed.
-
-        Nobody else can change that record until the block exits. Changes
-        are saved if the block exits normally and thrown away if it raises,
-        so the service decides the outcome inside the block and raises only
-        after it has exited.
-        """
+        ...
 
     def get(self, email: str) -> Optional[VerificationRecord]:
         ...
 
 
+# Keeps records in a dict, used for local testing (everything resets when the server restarts)
 class InMemoryVerificationStore:
-    """Keeps records in a dict. Used for local development and tests.
-    Everything is lost when the server restarts."""
-
     def __init__(self) -> None:
         self._records: dict[str, VerificationRecord] = {}
         self._lock = threading.Lock()
@@ -156,7 +103,7 @@ class InMemoryVerificationStore:
     def locked(self, email: str) -> Iterator[VerificationRecord]:
         with self._lock:
             record = replace(self._records.get(email) or VerificationRecord(email))
-            yield record  # if the block raises, the copy is simply dropped
+            yield record  # if the block raises we never get past here, so the copy is dropped
             self._records[email] = record
 
     def get(self, email: str) -> Optional[VerificationRecord]:
@@ -165,9 +112,7 @@ class InMemoryVerificationStore:
             return replace(record) if record else None
 
 
-# --------------------------------------------------------------------------
-# Errors the routes turn into HTTP responses
-# --------------------------------------------------------------------------
+# Errors the routes turn into responses
 
 class VerificationError(Exception):
     code = "verification_error"
@@ -216,10 +161,6 @@ class CodeSent:
     resend_after: int  # seconds
 
 
-# --------------------------------------------------------------------------
-# Service
-# --------------------------------------------------------------------------
-
 def _ceil_seconds(delta: timedelta) -> int:
     return max(1, math.ceil(delta.total_seconds()))
 
@@ -237,21 +178,19 @@ class VerificationService:
     config: VerificationConfig = field(default_factory=VerificationConfig)
     now: Callable[[], datetime] = _utc_now
 
+    # Hashes the code with a secret key so the db never has the real code
+    # (a plain hash wouldn't work, there are only a million codes to try)
     def _hash(self, email: str, code: str) -> str:
         message = email.encode() + b"\x00" + code.encode()
         return hmac.new(self.secret, message, hashlib.sha256).hexdigest()
 
+    # Random code with leading zeros kept, e.g. "042917"
     def _new_code(self) -> str:
         n = self.config.code_length
         return f"{secrets.randbelow(10 ** n):0{n}d}"
 
+    # Makes a new code for the email and sends it, replacing any older code (issue #18)
     def request_code(self, raw_email: object) -> CodeSent:
-        """Issue a new code for the address and email it (issue #18).
-
-        A new code replaces any earlier one and resets its attempt counter.
-        That reset does not weaken the bound in the module docstring, because
-        the number of codes per window is itself limited.
-        """
         cfg = self.config
         email = normalize_psu_email(raw_email, cfg.allowed_domains)
         t = self.now()
@@ -270,8 +209,7 @@ class VerificationService:
                 r.expires_at = t + cfg.code_ttl
                 r.attempts = 0
                 r.last_sent_at = t
-                # Counted before sending, so a failed send still uses up one
-                # of the m sends. That keeps the bound true even if sending fails.
+                # counted before sending so a failed send still uses up a send
                 r.sends_in_window += 1
         if limited is not None:
             raise limited
@@ -294,19 +232,17 @@ class VerificationService:
             resend_after=_ceil_seconds(cfg.resend_cooldown),
         )
 
+    # Checks the code, returns the email if it's right and raises otherwise
     def verify(self, raw_email: object, raw_code: object) -> str:
-        """Check a code. Returns the normalized email on success, raises otherwise."""
         cfg = self.config
         email = normalize_psu_email(raw_email, cfg.allowed_domains)
         code = raw_code.strip() if isinstance(raw_code, str) else ""
+        # bad format doesn't cost an attempt since it could never match anyway
         if not re.fullmatch(rf"\d{{{cfg.code_length}}}", code):
-            # Malformed input is rejected without using an attempt. It could
-            # never match, so the bound above is unaffected.
             raise InvalidCodeFormat(f"The code is {cfg.code_length} digits.")
         t = self.now()
 
-        # Decide the outcome while holding the lock, then raise after the
-        # block exits. That way the attempt counter is always saved.
+        # figure out the result inside the lock, raise after so the attempt count gets saved
         outcome: Optional[VerificationError] = None
         with self.store.locked(email) as r:
             if r.code_hash is None:
@@ -317,7 +253,7 @@ class VerificationService:
             else:
                 r.attempts += 1
                 if hmac.compare_digest(r.code_hash, self._hash(email, code)):
-                    r.clear_code()  # a code works only once
+                    r.clear_code()  # codes only work once
                     r.verified_at = t
                 elif r.attempts >= cfg.max_attempts:
                     r.clear_code()
@@ -329,8 +265,8 @@ class VerificationService:
             raise outcome
         return email
 
+    # For the sign up endpoint, checks if this email finished verifying
     def is_verified(self, raw_email: object) -> bool:
-        """For the sign-up endpoint: has this address completed verification?"""
         try:
             email = normalize_psu_email(raw_email, self.config.allowed_domains)
         except InvalidEmail:
@@ -339,10 +275,7 @@ class VerificationService:
         return record is not None and record.verified_at is not None
 
 
-# --------------------------------------------------------------------------
-# Building the service from environment variables (see backend/.env.example)
-# --------------------------------------------------------------------------
-
+# Builds the service from environment variables (see backend/.env.example)
 def build_service_from_env(env=os.environ) -> VerificationService:
     from email_sender import build_sender_from_env
 

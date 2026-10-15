@@ -1,9 +1,5 @@
-"""
-Postgres storage for email verification records (issue #12).
-
-Uses the email_verifications table defined in db.py. Turned on with
-VERIFICATION_STORE=postgres.
-"""
+# Postgres storage for verification records (issue #12)
+# Uses the email_verifications table from db.py, turn on with VERIFICATION_STORE=postgres
 
 from __future__ import annotations
 
@@ -41,17 +37,14 @@ class PostgresVerificationStore:
         finally:
             conn.close()
 
+    # Locks the row with SELECT ... FOR UPDATE so two requests for the same email
+    # run one after the other (stops people getting extra guesses by sending at once)
     @contextmanager
     def locked(self, email: str) -> Iterator[VerificationRecord]:
-        """Locks the row with SELECT ... FOR UPDATE for the length of the block.
-
-        Two requests for the same email (for example two verify calls sent at
-        the same moment) therefore run one after the other, so the attempt
-        limit can't be exceeded through a race."""
         with self._connection() as conn:
             try:
                 with conn.cursor() as cur:
-                    # Make sure the row exists so there is something to lock.
+                    # make sure the row exists so there's something to lock
                     cur.execute(
                         "INSERT INTO email_verifications (email) VALUES (%s) "
                         "ON CONFLICT (email) DO NOTHING",

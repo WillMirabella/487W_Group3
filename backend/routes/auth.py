@@ -1,11 +1,7 @@
-"""
-Email verification API (issue #12).
-
-POST /api/auth/request-code   {"email": "abc123@psu.edu"}
-POST /api/auth/verify         {"email": "abc123@psu.edu", "code": "123456"}
-
-Every error response has the shape {"error": <machine code>, "message": <text to show the user>}.
-"""
+# Email verification routes (issue #12)
+# POST /api/auth/request-code  {"email": "abc123@psu.edu"}
+# POST /api/auth/verify        {"email": "abc123@psu.edu", "code": "123456"}
+# errors always come back as {"error": ..., "message": ...}
 
 from flask import Blueprint, current_app, jsonify, request
 
@@ -21,6 +17,7 @@ from verification import (
     VerificationService,
 )
 
+# blueprint for the auth api
 auth_bp = Blueprint("auth", __name__, url_prefix="/api/auth")
 
 
@@ -37,6 +34,7 @@ def _json_body():
     return body if isinstance(body, dict) else None
 
 
+# Sends a verification code to the email
 @auth_bp.post("/request-code")
 def request_code():
     body = _json_body()
@@ -61,6 +59,7 @@ def request_code():
     }), 202
 
 
+# Checks the code the user typed in
 @auth_bp.post("/verify")
 def verify():
     body = _json_body()
