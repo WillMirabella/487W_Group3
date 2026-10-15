@@ -1,1 +1,1 @@
-export { default } from './components/Signupscreen'; 
+export { default } from './components/sign-up-screen';

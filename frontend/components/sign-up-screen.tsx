@@ -5,7 +5,6 @@ import {
   Platform,
   Pressable,
   SafeAreaView,
-  ScrollView,
   StatusBar,
   StyleSheet,
   Text,
@@ -13,7 +12,7 @@ import {
   View,
 } from 'react-native';
 
-export default function Signupscreen() {
+export default function SignUpScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -44,14 +43,9 @@ export default function Signupscreen() {
         style={styles.flex}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       >
-        <ScrollView
-          contentContainerStyle={styles.content}
-          keyboardShouldPersistTaps="handled"
-        >
+        <View style={styles.content}>
           <View style={styles.header}>
-            <View style={styles.logo}>
-              <Text style={styles.logoText}>L.</Text>
-            </View>
+            
 
             <Text style={styles.brand}>LionLift</Text>
             <Text style={styles.campus}>PENN STATE ABINGTON</Text>
@@ -60,10 +54,7 @@ export default function Signupscreen() {
               A Ride for Students.{'\n'}By Students.
             </Text>
 
-            <Text style={styles.tagline}>
-              Connect with your PSU community and ride together.
-            </Text>
-          </View>
+            </View>
 
           <View style={styles.card}>
             <Text style={styles.title}>Welcome back</Text>
@@ -72,7 +63,7 @@ export default function Signupscreen() {
               Sign in or create an account.
             </Text>
 
-            <Text style={styles.label}>PSU email address</Text>
+            <Text style={styles.label}>Penn State University Email</Text>
 
             <TextInput
               style={styles.input}
@@ -83,7 +74,7 @@ export default function Signupscreen() {
               keyboardType="email-address"
               autoCapitalize="none"
               autoCorrect={false}
-              accessibilityLabel="PSU email address"
+              accessibilityLabel="Penn State University Email"
             />
 
             <Text style={styles.label}>Password</Text>
@@ -169,7 +160,7 @@ export default function Signupscreen() {
           <Text style={styles.footer}>
             CONNECTING THE ABINGTON COMMUNITY
           </Text>
-        </ScrollView>
+        </View>
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
@@ -197,19 +188,6 @@ const styles = StyleSheet.create({
     paddingBottom: 56,
     alignItems: 'center',
   },
-  logo: {
-    width: 52,
-    height: 52,
-    borderRadius: 16,
-    backgroundColor: '#FFFFFF',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  logoText: {
-    color: '#245BE8',
-    fontSize: 34,
-    fontWeight: '800',
-  },
   brand: {
     color: '#FFFFFF',
     fontSize: 28,
@@ -229,14 +207,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginTop: 28,
     lineHeight: 41,
-  },
-  tagline: {
-    color: '#C3D2EB',
-    fontSize: 14,
-    lineHeight: 22,
-    textAlign: 'center',
-    marginTop: 12,
-    maxWidth: 300,
   },
   card: {
     backgroundColor: '#FFFFFF',
@@ -261,7 +231,7 @@ const styles = StyleSheet.create({
     color: '#65738B',
     fontSize: 14,
     marginTop: 8,
-    marginBottom: 26,
+    marginBottom: 16,
   },
   label: {
     color: '#293D60',
@@ -275,10 +245,10 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     backgroundColor: '#F9FBFE',
     paddingHorizontal: 15,
-    paddingVertical: 16,
+    paddingVertical: 11,
     color: '#102B5B',
     fontSize: 16,
-    marginBottom: 20,
+    marginBottom: 12,
   },
   passwordContainer: {
     flexDirection: 'row',
@@ -292,7 +262,7 @@ const styles = StyleSheet.create({
     flex: 1,
     minWidth: 0,
     paddingHorizontal: 15,
-    paddingVertical: 16,
+    paddingVertical: 11,
     color: '#102B5B',
     fontSize: 16,
   },
@@ -308,13 +278,13 @@ const styles = StyleSheet.create({
   },
   forgotButton: {
     alignSelf: 'flex-end',
-    paddingVertical: 16,
-    marginBottom: 8,
+    paddingVertical: 10,
+    marginBottom: 2,
   },
   signInButton: {
     backgroundColor: '#245BE8',
     borderRadius: 12,
-    paddingVertical: 17,
+    paddingVertical: 13,
     alignItems: 'center',
   },
   buttonPressed: {
@@ -328,7 +298,7 @@ const styles = StyleSheet.create({
   divider: {
     height: 1,
     backgroundColor: '#E8EDF5',
-    marginVertical: 24,
+    marginVertical: 16,
   },
   accountPrompt: {
     color: '#65738B',
@@ -340,7 +310,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#245BE8',
     borderRadius: 12,
-    paddingVertical: 16,
+    paddingVertical: 13,
     alignItems: 'center',
   },
   createPressed: {
@@ -356,7 +326,7 @@ const styles = StyleSheet.create({
     fontSize: 9,
     letterSpacing: 1.5,
     textAlign: 'center',
-    marginTop: 26,
+    marginTop: 14,
     paddingHorizontal: 20,
   },
 });
