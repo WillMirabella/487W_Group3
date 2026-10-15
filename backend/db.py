@@ -22,6 +22,21 @@ def get_connection():
         print("Connection to PostgreSQL failed.")
         return False
 
+# Email verification state, one row per address (see verification.py, issue #12).
+# code_hash is an HMAC-SHA256 hex digest (64 chars); the code itself is never stored.
+EMAIL_VERIFICATIONS_DDL = """
+        CREATE TABLE IF NOT EXISTS email_verifications (
+            email VARCHAR(254) PRIMARY KEY,
+            code_hash CHAR(64),
+            expires_at TIMESTAMPTZ,
+            attempts INTEGER NOT NULL DEFAULT 0,
+            last_sent_at TIMESTAMPTZ,
+            window_start TIMESTAMPTZ,
+            sends_in_window INTEGER NOT NULL DEFAULT 0,
+            verified_at TIMESTAMPTZ
+        );
+"""
+
 # Creates relations, if they don't already exist
 def create_relations():
     query = """
@@ -55,7 +70,7 @@ def create_relations():
             method VARCHAR(100),
             datetime VARCHAR(100)
         );
-    """
+    """ + EMAIL_VERIFICATIONS_DDL
     conn = get_connection()
     curr = conn.cursor()
     curr.execute(query)
