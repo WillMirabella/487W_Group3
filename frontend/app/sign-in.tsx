@@ -1,3 +1,4 @@
+import { router } from 'expo-router/build/global-state/router';
 import React, { useState } from 'react';
 import {
   Alert,
@@ -12,13 +13,17 @@ import {
   View,
 } from 'react-native';
 
-export default function SignUpScreen() {
+export default function SignInScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
 
   function handleSignIn() {
-    if (!email.trim() || !password) {
+    // Warning: I have temporatily added an automatic redirect to the Find Drivers tab for demonstration purposes. This will be removed when authentication is implemented.
+    router.replace('/(app)/find-drivers');
+
+    // Uncomment the following code when authentication is implemented.
+    /*if (!email.trim() || !password) {
       Alert.alert(
         'Missing details',
         'Please enter your email and password.'
@@ -29,7 +34,7 @@ export default function SignUpScreen() {
     Alert.alert(
       'Preview only',
       'Authentication will be connected later.'
-    );
+    );*/
   }
 
   return (
