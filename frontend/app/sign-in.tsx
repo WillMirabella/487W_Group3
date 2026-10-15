@@ -1,5 +1,5 @@
 import { router } from 'expo-router/build/global-state/router';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import {
   Alert,
   KeyboardAvoidingView,
@@ -12,6 +12,7 @@ import {
   TextInput,
   View,
 } from 'react-native';
+import { colors } from '../constants/colors';
 
 export default function SignInScreen() {
   const [email, setEmail] = useState('');
@@ -161,10 +162,6 @@ export default function SignInScreen() {
               </Text>
             </Pressable>
           </View>
-
-          <Text style={styles.footer}>
-            CONNECTING THE ABINGTON COMMUNITY
-          </Text>
         </View>
       </KeyboardAvoidingView>
     </SafeAreaView>
@@ -177,69 +174,70 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    backgroundColor: '#102B5B',
+    backgroundColor: colors.primary,
     paddingTop:
       Platform.OS === 'android' ? StatusBar.currentHeight : 0,
   },
   content: {
     flexGrow: 1,
-    backgroundColor: '#F1F5FC',
+    backgroundColor: colors.background,
     paddingBottom: 28,
   },
   header: {
-    backgroundColor: '#102B5B',
+    backgroundColor: colors.primary,
     paddingHorizontal: 30,
     paddingTop: 28,
     paddingBottom: 56,
     alignItems: 'center',
   },
   brand: {
-    color: '#FFFFFF',
+    color: colors.background,
     fontSize: 28,
     fontWeight: '700',
     marginTop: 10,
   },
   campus: {
-    color: '#A9C4FF',
+    color: colors.accent,
     fontSize: 10,
     letterSpacing: 2,
     marginTop: 8,
   },
   headline: {
-    color: '#FFFFFF',
+    color: colors.background,
     fontSize: 34,
     fontWeight: '700',
     textAlign: 'center',
     marginTop: 28,
     lineHeight: 41,
   },
+  // Maybe merge with screenStyles.card in the future
   card: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.background,
     width: '90%',
     maxWidth: 440,
     alignSelf: 'center',
     marginTop: -26,
     borderRadius: 24,
     padding: 24,
-    shadowColor: '#102B5B',
+    shadowColor: colors.primary,
     shadowOffset: { width: 0, height: 6 },
     shadowOpacity: 0.1,
     shadowRadius: 16,
     elevation: 5,
   },
   title: {
-    color: '#102B5B',
+    color: colors.primary,
     fontSize: 27,
     fontWeight: '700',
   },
   description: {
-    color: '#65738B',
+    color: '#65738B', // undefined color
     fontSize: 14,
     marginTop: 8,
     marginBottom: 16,
   },
   label: {
-    color: '#293D60',
+    color: colors.secondary,
     fontSize: 14,
     fontWeight: '600',
     marginBottom: 9,
@@ -268,7 +266,7 @@ const styles = StyleSheet.create({
     minWidth: 0,
     paddingHorizontal: 15,
     paddingVertical: 11,
-    color: '#102B5B',
+    color: colors.secondary,
     fontSize: 16,
   },
   showButton: {
@@ -277,7 +275,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   link: {
-    color: '#245BE8',
+    color: colors.accent,
     fontWeight: '600',
     fontSize: 13,
   },
@@ -287,13 +285,13 @@ const styles = StyleSheet.create({
     marginBottom: 2,
   },
   signInButton: {
-    backgroundColor: '#245BE8',
+    backgroundColor: colors.secondary,
     borderRadius: 12,
     paddingVertical: 13,
     alignItems: 'center',
   },
   buttonPressed: {
-    backgroundColor: '#1649C7',
+    backgroundColor: colors.primary,
   },
   signInText: {
     color: '#FFFFFF',
@@ -313,25 +311,17 @@ const styles = StyleSheet.create({
   },
   createButton: {
     borderWidth: 1,
-    borderColor: '#245BE8',
+    borderColor: colors.secondary,
     borderRadius: 12,
     paddingVertical: 13,
     alignItems: 'center',
   },
   createPressed: {
-    backgroundColor: '#EDF3FF',
+    backgroundColor: colors.secondary,
   },
   createText: {
-    color: '#245BE8',
+    color: colors.primary,
     fontSize: 16,
     fontWeight: '700',
-  },
-  footer: {
-    color: '#677A9A',
-    fontSize: 9,
-    letterSpacing: 1.5,
-    textAlign: 'center',
-    marginTop: 14,
-    paddingHorizontal: 20,
   },
 });

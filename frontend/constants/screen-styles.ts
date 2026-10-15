@@ -1,4 +1,5 @@
 import { StyleSheet } from 'react-native';
+import { colors } from './colors';
 
 // Shared appearance for the placeholder screens.
 export const screenStyles = StyleSheet.create({
@@ -13,6 +14,6 @@ export const screenStyles = StyleSheet.create({
     alignItems: 'center',
     gap: 20,
   },
-  cardTitle: { color: '#1E407C', fontSize: 20, fontWeight: '600' },
+  cardTitle: { color: colors.primary, fontSize: 20, fontWeight: '600' },
   description: { color: '#526477', fontSize: 16, lineHeight: 25, textAlign: 'center' },
 });

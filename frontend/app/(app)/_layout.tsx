@@ -1,6 +1,7 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Tabs } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { colors } from '../../constants/colors';
 
 // NavBar from the UML. Each name matches a screen file in this folder.
 export default function NavBar() {
@@ -8,9 +9,9 @@ export default function NavBar() {
 
   return (
     <Tabs initialRouteName="find-drivers" screenOptions={{
-      headerTintColor: '#1E407C',
+      headerTintColor: colors.primary,
       headerShadowVisible: false,
-      tabBarActiveTintColor: '#1E407C',
+      tabBarActiveTintColor: colors.primary,
       tabBarActiveBackgroundColor: '#EFF6FF',
       tabBarLabelPosition: 'below-icon',
       // Use an actual height, including the phone's bottom safe area.
