@@ -2,9 +2,6 @@ import { router } from "expo-router/build/global-state/router";
 import { Fragment, useState } from "react";
 import {
   Alert,
-  KeyboardAvoidingView,
-  Platform,
-  Pressable,
   StatusBar,
   StyleSheet,
   Text,
@@ -71,15 +68,17 @@ export default function SignInScreen() {
               onSubmitEditing={handleSignIn}
             />
 
-            <SmallButton
-              text="Forgot password?"
-              onPress={() =>
-                Alert.alert(
-                  "Forgot password",
-                  "Password recovery will be added later.",
-                )
-              }
-            ></SmallButton>
+            <View style={{ flexDirection: "row-reverse" }}>
+              <SmallButton
+                text="Forgot password?"
+                onPress={() =>
+                  Alert.alert(
+                    "Forgot password",
+                    "Password recovery will be added later.",
+                  )
+                }
+              ></SmallButton>
+            </View>
 
             <BigButton text="Sign in" onPress={handleSignIn} />
 
@@ -138,12 +137,5 @@ const styles = StyleSheet.create({
     fontSize: 32,
     fontWeight: "bold",
     marginVertical: 24,
-  },
-  orText: {
-    color: colors.accent,
-    textAlign: "center",
-    fontSize: 14,
-    fontWeight: "bold",
-    marginVertical: 12,
   },
 });

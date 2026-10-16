@@ -1,4 +1,4 @@
-import { Pressable, Text } from "react-native";
+import { Pressable, StyleSheet, Text } from "react-native";
 import { colors } from "../../constants/colors";
 
 type Props = {
@@ -22,7 +22,7 @@ export default function BigButton({ text, onPress, borderOnly }: Props) {
   );
 }
 
-const styles = (borderOnly: boolean | undefined) => ({
+const styles = (borderOnly: boolean | undefined) => StyleSheet.create({
   button: {
     backgroundColor: (borderOnly ?? false) ? "transparent" : colors.secondary,
     borderWidth: (borderOnly ?? false) ? 2 : 0,

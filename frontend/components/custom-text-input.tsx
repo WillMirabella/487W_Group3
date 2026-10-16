@@ -1,4 +1,4 @@
-import { Pressable, Text, TextInput, View } from "react-native";
+import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 import { colors } from "../constants/colors";
 import { useState } from "react";
 import Ionicons from '@expo/vector-icons/Ionicons';
@@ -21,7 +21,7 @@ export default function CustomTextInput({
   keyboardType,
   onSubmitEditing,
   isPassword,
-}: Props) {
+}: Props){
   const [showPassword, setShowPassword] = useState(false);
 
   return (
@@ -62,7 +62,7 @@ export default function CustomTextInput({
   );
 }
 
-const styles = {
+const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
     alignItems: "center",
@@ -90,4 +90,4 @@ const styles = {
     paddingHorizontal: 16,
     paddingVertical: 12, // This is 12 because 24 + 12 + 12 = 48, which is the height of the input field.
   },
-};
+});

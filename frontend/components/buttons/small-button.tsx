@@ -1,4 +1,4 @@
-import { Pressable, Text } from "react-native";
+import { Pressable, StyleSheet, Text } from "react-native";
 import { colors } from "../../constants/colors";
 
 type Props = {
@@ -14,11 +14,11 @@ export default function SmallButton({ text, onPress }: Props) {
   );
 }
 
-const styles = {
+const styles = StyleSheet.create({
   text: {
     color: colors.accent,
     fontSize: 14,
     fontWeight: "bold",
     marginVertical: 12,
   },
-};
+});
