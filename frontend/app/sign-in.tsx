@@ -1,27 +1,29 @@
-import { router } from 'expo-router/build/global-state/router';
-import { useState } from 'react';
+import { router } from "expo-router/build/global-state/router";
+import { Fragment, useState } from "react";
 import {
   Alert,
   KeyboardAvoidingView,
   Platform,
   Pressable,
-  SafeAreaView,
   StatusBar,
   StyleSheet,
   Text,
-  TextInput,
   View,
-} from 'react-native';
-import { colors } from '../constants/colors';
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { colors } from "../constants/colors";
+import CustomTextInput from "../components/custom-text-input";
+import BigButton from "../components/buttons/big-button";
+import SmallButton from "../components/buttons/small-button";
+import Divider from "../components/divider";
 
 export default function SignInScreen() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
   function handleSignIn() {
     // Warning: I have temporatily added an automatic redirect to the Find Drivers tab for demonstration purposes. This will be removed when authentication is implemented.
-    router.replace('/(app)/find-drivers');
+    router.replace("/(app)/find-drivers");
 
     // Uncomment the following code when authentication is implemented.
     /*if (!email.trim() || !password) {
@@ -39,289 +41,109 @@ export default function SignInScreen() {
   }
 
   return (
-    <SafeAreaView style={styles.container}>
-      <StatusBar
-        barStyle="light-content"
-        backgroundColor="#102B5B"
-      />
+    // Why there are two SafeAreaViews: https://stackoverflow.com/a/52458846
+    <Fragment>
+      <StatusBar barStyle="light-content" backgroundColor={colors.secondary} />
+      <SafeAreaView style={{ flex: 0, backgroundColor: colors.secondary }} />
+        <View style={{ flex: 1, backgroundColor: colors.secondary }}>
+          <View style={styles.titleContainer}>
+            <Text style={styles.title}>Lion Lift</Text>
+            <Text style={styles.subtitle}>PENN STATE ABINGTON</Text>
+          </View>
 
-      <KeyboardAvoidingView
-        style={styles.flex}
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-      >
-        <View style={styles.content}>
-          <View style={styles.header}>
-            
+          <View style={styles.sheet}>
+            <Text style={styles.heading}>Sign In</Text>
 
-            <Text style={styles.brand}>LionLift</Text>
-            <Text style={styles.campus}>PENN STATE ABINGTON</Text>
-
-            <Text style={styles.headline}>
-              A Ride for Students.{'\n'}By Students.
-            </Text>
-
-            </View>
-
-          <View style={styles.card}>
-            <Text style={styles.title}>Welcome back</Text>
-
-            <Text style={styles.description}>
-              Sign in or create an account.
-            </Text>
-
-            <Text style={styles.label}>Penn State University Email</Text>
-
-            <TextInput
-              style={styles.input}
+            <CustomTextInput
+              label="Penn State Email"
               placeholder="abc123@psu.edu"
-              placeholderTextColor="#8592A8"
               value={email}
               onChangeText={setEmail}
               keyboardType="email-address"
-              autoCapitalize="none"
-              autoCorrect={false}
-              accessibilityLabel="Penn State University Email"
             />
 
-            <Text style={styles.label}>Password</Text>
+            <CustomTextInput
+              label="Password"
+              placeholder="Enter your password"
+              value={password}
+              onChangeText={setPassword}
+              isPassword={true}
+              onSubmitEditing={handleSignIn}
+            />
 
-            <View style={styles.passwordContainer}>
-              <TextInput
-                style={styles.passwordInput}
-                placeholder="Enter your password"
-                placeholderTextColor="#8592A8"
-                value={password}
-                onChangeText={setPassword}
-                secureTextEntry={!showPassword}
-                autoCapitalize="none"
-                autoCorrect={false}
-                accessibilityLabel="Password"
-                returnKeyType="go"
-                onSubmitEditing={handleSignIn}
-              />
-
-              <Pressable
-                style={styles.showButton}
-                onPress={() => setShowPassword(!showPassword)}
-                accessibilityRole="button"
-                accessibilityLabel={
-                  showPassword ? 'Hide password' : 'Show password'
-                }
-              >
-                <Text style={styles.link}>
-                  {showPassword ? 'Hide' : 'Show'}
-                </Text>
-              </Pressable>
-            </View>
-
-            <Pressable
-              style={styles.forgotButton}
-              accessibilityRole="button"
+            <SmallButton
+              text="Forgot password?"
               onPress={() =>
                 Alert.alert(
-                  'Forgot password',
-                  'Password recovery will be added later.'
+                  "Forgot password",
+                  "Password recovery will be added later.",
                 )
               }
-            >
-              <Text style={styles.link}>Forgot password?</Text>
-            </Pressable>
+            ></SmallButton>
 
-            <Pressable
-              accessibilityRole="button"
-              onPress={handleSignIn}
-              style={({ pressed }) => [
-                styles.signInButton,
-                pressed && styles.buttonPressed,
-              ]}
-            >
-              <Text style={styles.signInText}>Sign in</Text>
-            </Pressable>
+            <BigButton text="Sign in" onPress={handleSignIn} />
 
-            <View style={styles.divider} />
+            <Divider />
 
-            <Text style={styles.accountPrompt}>
-              Don’t have an account?
-            </Text>
-
-            <Pressable
-              accessibilityRole="button"
+            <BigButton
+              text="Create account"
               onPress={() =>
                 Alert.alert(
-                  'Create an account',
-                  'The account creation screen will be added next.'
+                  "Create account",
+                  "Account creation will be added later.",
                 )
               }
-              style={({ pressed }) => [
-                styles.createButton,
-                pressed && styles.createPressed,
-              ]}
-            >
-              <Text style={styles.createText}>
-                Create an account
-              </Text>
-            </Pressable>
+              borderOnly={true}
+            />
           </View>
         </View>
-      </KeyboardAvoidingView>
-    </SafeAreaView>
+    </Fragment>
   );
 }
 
 const styles = StyleSheet.create({
-  flex: {
-    flex: 1,
-  },
   container: {
     flex: 1,
-    backgroundColor: colors.primary,
-    paddingTop:
-      Platform.OS === 'android' ? StatusBar.currentHeight : 0,
-  },
-  content: {
-    flexGrow: 1,
+    justifyContent: "center",
     backgroundColor: colors.background,
-    paddingBottom: 28,
+    margin: 0,
   },
-  header: {
-    backgroundColor: colors.primary,
-    paddingHorizontal: 30,
-    paddingTop: 28,
-    paddingBottom: 56,
-    alignItems: 'center',
-  },
-  brand: {
-    color: colors.background,
-    fontSize: 28,
-    fontWeight: '700',
-    marginTop: 10,
-  },
-  campus: {
-    color: colors.accent,
-    fontSize: 10,
-    letterSpacing: 2,
-    marginTop: 8,
-  },
-  headline: {
-    color: colors.background,
-    fontSize: 34,
-    fontWeight: '700',
-    textAlign: 'center',
-    marginTop: 28,
-    lineHeight: 41,
-  },
-  // Maybe merge with screenStyles.card in the future
-  card: {
-    backgroundColor: colors.background,
-    width: '90%',
-    maxWidth: 440,
-    alignSelf: 'center',
-    marginTop: -26,
-    borderRadius: 24,
-    padding: 24,
-    shadowColor: colors.primary,
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.1,
-    shadowRadius: 16,
-    elevation: 5,
+  titleContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: colors.secondary,
+    paddingVertical: 24,
   },
   title: {
-    color: colors.primary,
-    fontSize: 27,
-    fontWeight: '700',
+    color: colors.background,
+    fontSize: 40,
+    fontWeight: "bold",
+    marginBottom: 8,
   },
-  description: {
-    color: '#65738B', // undefined color
-    fontSize: 14,
-    marginTop: 8,
-    marginBottom: 16,
-  },
-  label: {
-    color: colors.secondary,
-    fontSize: 14,
-    fontWeight: '600',
-    marginBottom: 9,
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: '#DCE4EF',
-    borderRadius: 12,
-    backgroundColor: '#F9FBFE',
-    paddingHorizontal: 15,
-    paddingVertical: 11,
-    color: '#102B5B',
-    fontSize: 16,
-    marginBottom: 12,
-  },
-  passwordContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#DCE4EF',
-    borderRadius: 12,
-    backgroundColor: '#F9FBFE',
-  },
-  passwordInput: {
-    flex: 1,
-    minWidth: 0,
-    paddingHorizontal: 15,
-    paddingVertical: 11,
-    color: colors.secondary,
-    fontSize: 16,
-  },
-  showButton: {
-    paddingHorizontal: 15,
-    minHeight: 48,
-    justifyContent: 'center',
-  },
-  link: {
+  subtitle: {
     color: colors.accent,
-    fontWeight: '600',
-    fontSize: 13,
-  },
-  forgotButton: {
-    alignSelf: 'flex-end',
-    paddingVertical: 10,
-    marginBottom: 2,
-  },
-  signInButton: {
-    backgroundColor: colors.secondary,
-    borderRadius: 12,
-    paddingVertical: 13,
-    alignItems: 'center',
-  },
-  buttonPressed: {
-    backgroundColor: colors.primary,
-  },
-  signInText: {
-    color: '#FFFFFF',
     fontSize: 16,
-    fontWeight: '700',
+    letterSpacing: 2,
   },
-  divider: {
-    height: 1,
-    backgroundColor: '#E8EDF5',
-    marginVertical: 16,
+  sheet: {
+    flex: 4,
+    backgroundColor: colors.background,
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+    paddingHorizontal: 24,
   },
-  accountPrompt: {
-    color: '#65738B',
-    textAlign: 'center',
-    fontSize: 14,
-    marginBottom: 12,
-  },
-  createButton: {
-    borderWidth: 1,
-    borderColor: colors.secondary,
-    borderRadius: 12,
-    paddingVertical: 13,
-    alignItems: 'center',
-  },
-  createPressed: {
-    backgroundColor: colors.secondary,
-  },
-  createText: {
+  heading: {
     color: colors.primary,
-    fontSize: 16,
-    fontWeight: '700',
+    fontSize: 32,
+    fontWeight: "bold",
+    marginVertical: 24,
+  },
+  orText: {
+    color: colors.accent,
+    textAlign: "center",
+    fontSize: 14,
+    fontWeight: "bold",
+    marginVertical: 12,
   },
 });
