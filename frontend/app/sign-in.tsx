@@ -2,6 +2,7 @@ import { router } from "expo-router/build/global-state/router";
 import { Fragment, useState } from "react";
 import {
   Alert,
+  Platform,
   StatusBar,
   StyleSheet,
   Text,
@@ -13,6 +14,7 @@ import CustomTextInput from "../components/custom-text-input";
 import BigButton from "../components/buttons/big-button";
 import SmallButton from "../components/buttons/small-button";
 import Divider from "../components/divider";
+import { KeyboardAvoidingView } from "react-native";
 
 export default function SignInScreen() {
   const [email, setEmail] = useState("");
@@ -42,7 +44,8 @@ export default function SignInScreen() {
     <Fragment>
       <StatusBar barStyle="light-content" backgroundColor={colors.secondary} />
       <SafeAreaView style={{ flex: 0, backgroundColor: colors.secondary }} />
-        <View style={{ flex: 1, backgroundColor: colors.secondary }}>
+      <View style={{ flex: 1, backgroundColor: colors.secondary }}>
+        <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : undefined}  style={{ flex: 1 }}>
           <View style={styles.titleContainer}>
             <Text style={styles.title}>Lion Lift</Text>
             <Text style={styles.subtitle}>PENN STATE ABINGTON</Text>
@@ -95,7 +98,8 @@ export default function SignInScreen() {
               borderOnly={true}
             />
           </View>
-        </View>
+        </KeyboardAvoidingView>
+      </View>
     </Fragment>
   );
 }
