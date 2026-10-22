@@ -7,6 +7,7 @@ export default function FindDriversScreen() {
   return (
     <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
       <UserCard/>
+      <UserCard/>
       <UserCard expanded />
     </ScrollView>
   );

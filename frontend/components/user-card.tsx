@@ -6,6 +6,7 @@
 
 import { View, StyleSheet, Text } from "react-native";
 import { colors } from "../constants/colors";
+import GradientText from "./gradient-text";
 
 type Props = {
   expanded?: boolean;
@@ -20,9 +21,11 @@ export default function UserCard({ expanded=false }: Props) {
                 <Text style={styles.heading}>Alex Hanna</Text>
 
                 {/* This is extremely temporary and I am not completely sure what should go here and how it should be displayed */}
-                <Text style={styles.subheading}>2 miles away</Text>
-                <Text style={styles.subheading}>Male</Text>
-                <Text style={styles.subheading}>Driver</Text>
+                <Text style={styles.subheading}>{String(Math.round(Math.random() * 10))} miles away</Text>
+                <View style={{ flexDirection: "row" }}>
+                  <GradientText>{String(Math.round(Math.random() * 100))}</GradientText>
+                  <Text style={styles.subheading}>% match</Text>
+                </View>
             </View>
         </View>
         {expanded && <View style={styles.map}></View>}
