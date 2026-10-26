@@ -29,8 +29,16 @@ u3.make_driver("456 School Ln", "Venmo", c.id)
 contact1 = db.insert_contact(u.id, u2.id, "text", datetime.now())
 contact2 = db.insert_contact(u3.id, u2.id, "email", datetime.now())
 
+# Contacts Test
 #print(db.get_contact_by_id(contact1))
 #print(db.get_contact_by_id(contact2))
+
+# Blacklist test
+#print(db.check_blacklist("abc123@psu.edu"))
+#db.add_to_blacklist("abc123@psu.edu")
+#print(db.check_blacklist("abc123@psu.edu"))
+#u4 = User(None,"abc", "abc", "1234567890", "abc123@psu.edu", "male", "This is my description.", 2028, "Computer Science", None)
+#print(db.get_user_by_id(4))
 
 """
 Resulting relations:

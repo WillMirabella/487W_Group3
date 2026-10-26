@@ -55,6 +55,10 @@ def create_relations():
             method VARCHAR(100),
             datetime VARCHAR(100)
         );
+        CREATE TABLE IF NOT EXISTS blacklist (
+            id SERIAL PRIMARY KEY,
+            email VARCHAR(100)
+        );
     """
     conn = get_connection()
     curr = conn.cursor()
@@ -76,6 +80,8 @@ def clear_relations():
 
 # Inserts a new user into the users relation and returns the new user_id
 def insert_user(u):
+    if(check_blacklist(u.email)): return None
+
     query = """
         INSERT INTO users (first_name, last_name, phone, email, gender, description, grad_year, major, address, preferred_payment, schedule) 
         VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
@@ -200,3 +206,65 @@ def get_contact_by_id(id):
     conn.close()
 
     return row
+
+# Returns whether email is on the blacklist
+def check_blacklist(email):
+    query = """
+            SELECT * 
+            FROM blacklist 
+            WHERE email = %s;
+        """
+    conn = get_connection()
+    curr = conn.cursor()
+    curr.execute(query,(email,))
+    row = curr.fetchone()
+    conn.close()
+
+    return row!=None
+
+# Adds email to the blacklist
+def add_to_blacklist(email):
+    if(check_blacklist(email)): return None
+
+    query = """
+            INSERT INTO blacklist (email) 
+            VALUES (%s)
+            RETURNING id;
+        """
+    conn = get_connection()
+    curr = conn.cursor()
+    curr.execute(query,(email,))
+    conn.commit()
+    row = curr.fetchone()
+    conn.close()
+
+    return row
+
+# Adds email to the blacklist
+def remove_from_blacklist(email):
+    query = """
+            DELETE FROM blacklist
+            WHERE email = %s;
+        """
+    conn = get_connection()
+    curr = conn.cursor()
+    curr.execute(query,(email,))
+    conn.commit()
+    conn.close()
+
+    return
+
+# Get entire blacklist
+def get_blacklist():
+    query = """
+            SELECT * 
+            FROM blacklist;
+        """
+    conn = get_connection()
+    curr = conn.cursor()
+    curr.execute(query)
+    conn.commit()
+    rows = curr.fetchall()
+    conn.close()
+
+    return rows

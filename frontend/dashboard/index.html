@@ -1,0 +1,73 @@
+
+<!DOCTYPE html>
+<head>
+    <title>LionLift Dashboard</title>
+</head>
+    <body>
+        <table>
+            <thead>
+                <tr>
+                    <th style="display: flex;">Blacklist</th>
+                </tr>
+            </thead>
+            <tbody id="table-body"></tbody>
+        </table>
+    <div style="display: flex;">
+        <input type="text" id="text-input" placeholder="example@domain.com">
+        <button id="remove" title="Remove from blacklist">&minus;</button>
+        <button id="add" title="Add to blacklist">&plus;</button>
+    </div>
+
+        <script>
+            const tableBody = document.getElementById("table-body");      
+            const addButton = document.getElementById("add");    
+            const removeButton = document.getElementById("remove");
+            const textInput = document.getElementById("text-input");
+            const apiURL="http://127.0.0.1:8000/api/";
+
+            // Gets blacklist from server
+            function getBlacklist(){
+                fetch(apiURL+"get_blacklist")
+                .then(response => response.json()) 
+                .then(data => {
+                    tableBody.innerHTML="";
+                    data.forEach(row => {
+                        const tr = document.createElement("tr");
+
+                        const emailCell = document.createElement("td");
+                        emailCell.textContent = String(row[1]);
+
+                        tr.append(emailCell);
+                        tableBody.appendChild(tr);
+                    })  
+                });
+            }
+            
+            // Adds to the server's blacklist and gets the new blacklist
+            function addToBlacklist(){
+                fetch(apiURL+"add_to_blacklist/"+textInput.value)
+                .then(response => response.json()) 
+                .then(data => {
+                    getBlacklist();
+                });
+            }
+            function removeFromBlacklist(){
+                fetch(apiURL+"remove_from_blacklist/"+textInput.value)
+                .then(response => response.json()) 
+                .then(data => {
+                    getBlacklist();
+                });
+            }
+
+            addButton.addEventListener("click", function(event) {
+                addToBlacklist();
+            });
+
+            removeButton.addEventListener("click", function(event) {
+                removeFromBlacklist();
+            });
+
+            getBlacklist();
+        </script>
+    </body>
+</html>
