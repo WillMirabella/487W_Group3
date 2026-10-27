@@ -41,6 +41,29 @@ The unused `App.tsx` starter has been removed.
 Keep `package-lock.json` committed alongside dependency changes. It records exact
 versions for consistent installs across teammates and supports `npm ci`.
 
+### User view selector (issue #24)
+
+`components/user-view-selector.tsx` provides Compact and Expanded buttons.
+It receives the selected view through `expanded` and reports button presses
+through `onChange`. The selected button is highlighted and exposes its selected
+state to accessibility tools.
+
+The selector is not connected to Find Drivers yet. The user-card implementation
+is still in draft PR #40. Once that component is available, the screen can hold
+one `expanded` state and share it with the selector and every card:
+
+```tsx
+const [expanded, setExpanded] = useState(false);
+
+// Inside the screen's JSX:
+<UserViewSelector expanded={expanded} onChange={setExpanded} />
+<UserCard expanded={expanded} />
+```
+
+Import `useState` from React and the two components when integrating this example.
+Pass the same `expanded` value to each card in the list. This switches layouts
+without changing the list's users or their order.
+
 ### Verify changes
 
 - Install dependencies with `npm ci` (Node.js 22.13 or newer).
