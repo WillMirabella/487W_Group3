@@ -12,7 +12,7 @@ import { KeyboardAvoidingView } from "react-native";
 import SmallButton from "../components/buttons/small-button";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { OtpInput } from "react-native-otp-entry";
-import { useLocalSearchParams } from 'expo-router';
+import { router, useLocalSearchParams } from "expo-router";
 import Ionicons from '@expo/vector-icons/Ionicons';
 
 export default function SignInScreen() {
@@ -55,9 +55,12 @@ export default function SignInScreen() {
 
             <View style={{ marginTop: 24 }}>
               <OtpInput 
-                numberOfDigits={6} 
-                onTextChange={(text) => console.log(text)} 
+                numberOfDigits={6}
                 focusColor={colors.secondary}
+                onFilled={() => {
+                // Mohamed Added this so I am able to go to next age when a code is inputed.
+                router.replace("/choose-role");
+                }}
               />
             </View>
             
