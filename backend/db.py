@@ -244,15 +244,17 @@ def add_to_blacklist(email):
 def remove_from_blacklist(email):
     query = """
             DELETE FROM blacklist
-            WHERE email = %s;
+            WHERE email = %s
+            RETURNING *;
         """
     conn = get_connection()
     curr = conn.cursor()
     curr.execute(query,(email,))
+    row = curr.fetchone()
     conn.commit()
     conn.close()
 
-    return
+    return row
 
 # Get entire blacklist
 def get_blacklist():

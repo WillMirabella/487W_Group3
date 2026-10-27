@@ -5,9 +5,16 @@ import db
 app = Flask(__name__)
 app.register_blueprint(example_bp)
 
-@app.route("/")
-def hello_world():
-    return "<p>Hello, World!</p>"
+ALLOWED_IPS = {'127.0.0.1'}
+PROTECTED_ENDPOINTS = {'get_blacklist', 'add_to_blacklist', 'remove_from_blacklist'}
+
+@app.before_request
+def limit_remote_addr():
+    if request.endpoint not in PROTECTED_ENDPOINTS:
+        return None  
+    if request.remote_addr not in ALLOWED_IPS:
+        print(request.remote_addr)
+        abort(403)  
 
 @app.route("/api/get_blacklist")
 def get_blacklist():
@@ -31,4 +38,4 @@ def remove_from_blacklist(email):
     return response
 
 if __name__ == '__main__':
-    app.run(debug=True,port=8000)
+    app.run(host='127.0.0.1',debug=True,port=8000)

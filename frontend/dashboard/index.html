@@ -1,8 +1,8 @@
-
 <!DOCTYPE html>
-<head>
-    <title>LionLift Dashboard</title>
-</head>
+<html>
+    <head>
+        <title>Dashboard</title>
+    </head>
     <body>
         <table>
             <thead>
@@ -12,17 +12,20 @@
             </thead>
             <tbody id="table-body"></tbody>
         </table>
-    <div style="display: flex;">
-        <input type="text" id="text-input" placeholder="example@domain.com">
-        <button id="remove" title="Remove from blacklist">&minus;</button>
-        <button id="add" title="Add to blacklist">&plus;</button>
-    </div>
+        <div style="display: flex;">
+            <input type="text" id="text-input" placeholder="example@domain.com">
+            <button id="remove" title="Remove from blacklist">&minus;</button>
+            <button id="add" title="Add to blacklist">&plus;</button>
+        </div>
+        <textarea style="width:25%; aspect-ratio: 5/1;" readonly id="message"></textarea>
+        
 
         <script>
             const tableBody = document.getElementById("table-body");      
             const addButton = document.getElementById("add");    
             const removeButton = document.getElementById("remove");
             const textInput = document.getElementById("text-input");
+            const message = document.getElementById("message");
             const apiURL="http://127.0.0.1:8000/api/";
 
             // Gets blacklist from server
@@ -45,18 +48,38 @@
             
             // Adds to the server's blacklist and gets the new blacklist
             function addToBlacklist(){
-                fetch(apiURL+"add_to_blacklist/"+textInput.value)
+                if(errorCheck()) return;
+                fetch(apiURL+"add_to_blacklist/"+textInput.value.toLowerCase())
                 .then(response => response.json()) 
                 .then(data => {
                     getBlacklist();
+                    if(data==null) message.innerHTML+="["+new Date(Date.now()).toLocaleString()+"] ERROR: Duplicate entry\n";
+                    else message.innerHTML+="["+new Date(Date.now()).toLocaleString()+"] INFO: Added '"+textInput.value.toLowerCase()+"'\n";
+                    message.scrollTop = message.scrollHeight;
                 });
             }
             function removeFromBlacklist(){
-                fetch(apiURL+"remove_from_blacklist/"+textInput.value)
+                if(errorCheck()) return;
+                fetch(apiURL+"remove_from_blacklist/"+textInput.value.toLowerCase())
                 .then(response => response.json()) 
                 .then(data => {
                     getBlacklist();
+                    console.log(data);
+                    if(data==null) message.innerHTML+="["+new Date(Date.now()).toLocaleString()+"] ERROR: No such entry\n";
+                    else message.innerHTML+="["+new Date(Date.now()).toLocaleString()+"] INFO: Removed '"+textInput.value.toLowerCase()+"'\n";
+                    message.scrollTop = message.scrollHeight;
                 });
+            }
+            function errorCheck(){
+                if(textInput.value.toLowerCase()==""){
+                    message.innerHTML+="["+new Date(Date.now()).toLocaleString()+"] ERROR: Empty entry\n";
+                    return true;
+                }
+                if(textInput.value.toLowerCase().includes(" ")){
+                    message.innerHTML+="["+new Date(Date.now()).toLocaleString()+"] ERROR: Illegal entry\n";
+                    return true;
+                }
+                return false;
             }
 
             addButton.addEventListener("click", function(event) {
