@@ -1,7 +1,6 @@
 import { router } from "expo-router/build/global-state/router";
 import { Fragment, useState } from "react";
 import {
-  Alert,
   Platform,
   StyleSheet,
   StatusBar,
@@ -15,14 +14,47 @@ import Divider from "../components/divider";
 import { KeyboardAvoidingView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+const API_URL = process.env.EXPO_PUBLIC_API_URL;
+
 export default function SignInScreen() {
   const [email, setEmail] = useState("");
+  const [errorText, setErrorText] = useState("");
 
-  function handleSendCode(){
-    router.replace({
-      pathname: '/verify-code',
-      params: { email: email, },
-    });
+  const handleSendCode = async () => {
+    // Check email format on the frontend in the interest of redundancy
+    const normalizedEmail=email.trim().toLowerCase();
+    const parts = normalizedEmail.split('@');
+    if(normalizedEmail==""){
+      setErrorText("Email is required")
+      return;
+    }
+    else if(parts.length!=2 || parts[1]!="psu.edu"){
+      setErrorText("Please use your @psu.edu email")
+      return;
+    };
+
+    // Try to request a verification code
+    try {
+      const response = await fetch(`${API_URL}/api/auth/request-code`, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json',},
+        body: JSON.stringify({ email: email }),
+      });
+
+      const result = await response.json();
+      if (result['error']!=null){
+        setErrorText(result['error']);
+        console.log(result['error']);
+      }
+      else{
+        router.replace({
+          pathname: '/verify-code',
+          params: { email: email },
+        });
+      }
+    } catch (error) {
+      console.error('Error submitting data:', error);
+    }
   }
 
   return (
@@ -40,6 +72,9 @@ export default function SignInScreen() {
               onChangeText={setEmail}
               keyboardType="email-address"
             />
+            {errorText.length > 0 && (
+               <Text style={styles.errorText}>{errorText}</Text>
+            )}
             <Divider />
 
             <BigButton
@@ -92,4 +127,10 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginVertical: 24,
   },
+  errorText: {
+    color: colors.error,
+    fontSize: 14,
+    fontWeight: "bold",
+    marginVertical: 12,
+  }
 });

@@ -1,6 +1,6 @@
+import { router } from "expo-router/build/global-state/router";
 import { Fragment, useState, useEffect } from "react";
 import {
-  Alert,
   Platform,
   StyleSheet,
   StatusBar,
@@ -15,15 +15,57 @@ import { OtpInput } from "react-native-otp-entry";
 import { useLocalSearchParams } from 'expo-router';
 import Ionicons from '@expo/vector-icons/Ionicons';
 
+const API_URL = process.env.EXPO_PUBLIC_API_URL;
+
 export default function SignInScreen() {
   const { email } = useLocalSearchParams();
-  const [cooldown, setCooldown] = useState(30);
+  const [cooldown, setCooldown] = useState(60);
+  const [errorText, setErrorText] = useState("");
 
-  function handleResendCode() {
+  // Trys to request another verification code
+  const handleResendCode = async () => {
+    // Check if cooldown is over
     if (cooldown > 0) return;
-    setCooldown(30);
+
+    // Set cooldown back to 60 seconds
+    setCooldown(60);
+
+    try {
+      const response = await fetch(`${API_URL}/api/auth/request-code`, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json',},
+        body: JSON.stringify({ email: email }),
+      });
+
+      const result = await response.json();
+      if (result['error']!=null) console.log(result['error']);
+
+    } catch (error) {
+      console.error('Error submitting data:', error);
+    }
   }
 
+  // Trys to verify a verification code
+  const handleVerifyCode = async (code: string) => {
+    try {
+      const response = await fetch(`${API_URL}/api/auth/verify`, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json',},
+        body: JSON.stringify({ email: email, code: code }),
+      });
+
+      const result = await response.json();
+      if (result['error']!=null){
+        console.log(result['error']);
+        setErrorText(result['error']);
+      }
+      else router.replace("/(app)/find-drivers");
+    } catch (error) {
+      console.error('Error submitting data:', error);
+    }
+  }
+
+  // Decrement cooldown
   useEffect(() => {
     if (cooldown === 0) return;
 
@@ -43,33 +85,38 @@ export default function SignInScreen() {
           <View style={styles.sheet}>
             <Text style={styles.heading}>Enter Code</Text>
 
-            <View style={{gap: '6'}}>
+            <View style={{gap: 6}}>
               <Text style={styles.text}>Enter the 6-Digit verfication code sent to: </Text>
 
               <View style={{flexDirection: 'row', alignItems: 'center', gap: '6'}}>
                 <Ionicons name={"mail-outline"} size={24} color={colors.primary} /> 
                 <Text style={styles.boldText}>{email}</Text>
               </View>
-              
             </View>
 
             <View style={{ marginTop: 24 }}>
               <OtpInput 
-                numberOfDigits={6} 
-                onTextChange={(text) => console.log(text)} 
+                type="numeric"
+                numberOfDigits={6}  
                 focusColor={colors.secondary}
                 theme={{
                   pinCodeContainerStyle: styles.pinCodeContainer,
                 }}
+                onFilled={(text) => {
+                  handleVerifyCode(text);
+                }}
               />
             </View>
             
-            <View style={{ flexDirection: "row-reverse" }}>
+            <View style={{ flexDirection: "row-reverse",  justifyContent: 'space-between' }}>
               <SmallButton
                 text={cooldown > 0 ? `Resend Code (${cooldown}s)` : 'Resend Code'}
                 disabled={cooldown > 0}
                 onPress={() => handleResendCode()}
               ></SmallButton>
+              {errorText.length > 0 && (
+                <Text style={styles.errorText}>{errorText}</Text>
+              )}
             </View>
           </View>
         </KeyboardAvoidingView>
@@ -132,4 +179,10 @@ const styles = StyleSheet.create({
     marginVertical: 12,
     backgroundColor: colors.background,
   },
+  errorText: {
+    color: colors.error,
+    fontSize: 14,
+    fontWeight: "bold",
+    marginVertical: 12,
+  }
 });
