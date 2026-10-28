@@ -5,9 +5,8 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 import { colors } from "../constants/colors";
 import BigButton from "../components/buttons/big-button";
-import SmallButton from "../components/buttons/small-button";
 
-type Role = "driver" | "rider" | "both";
+type Role = "driver" | "rider";
 
 export default function ChooseRoleScreen() {
   function chooseRole(role: Role) {
@@ -28,10 +27,7 @@ export default function ChooseRoleScreen() {
         style={{ flex: 0, backgroundColor: colors.secondary }}
       />
 
-      <SafeAreaView
-        edges={["left", "right", "bottom"]}
-        style={styles.container}
-      >
+      <View style={styles.container}>
         <View style={styles.sheet}>
           <Text style={styles.heading}>
             How would you like to use LionLift?
@@ -48,13 +44,9 @@ export default function ChooseRoleScreen() {
               onPress={() => chooseRole("rider")}
             />
 
-            <BigButton
-              text="Both"
-              onPress={() => chooseRole("both")}
-            />
           </View>
         </View>
-      </SafeAreaView>
+      </View>
     </Fragment>
   );
 }
@@ -76,8 +68,7 @@ const styles = StyleSheet.create({
     color: colors.primary,
     fontSize: 32,
     fontWeight: "bold",
-    marginTop: 72,
-    marginBottom: 40,
+    marginVertical: 24,
   },
   options: {
     gap: 20,
