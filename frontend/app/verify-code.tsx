@@ -58,6 +58,9 @@ export default function SignInScreen() {
                 numberOfDigits={6} 
                 onTextChange={(text) => console.log(text)} 
                 focusColor={colors.secondary}
+                theme={{
+                  pinCodeContainerStyle: styles.pinCodeContainer,
+                }}
               />
             </View>
             
@@ -121,5 +124,12 @@ const styles = StyleSheet.create({
     color: colors.primary,
     fontSize: 18,
     fontWeight: "bold",
+  },
+  pinCodeContainer: {
+    borderWidth: 2,
+    borderColor: colors.border,
+    borderRadius: 16,
+    marginVertical: 12,
+    backgroundColor: colors.background,
   },
 });
