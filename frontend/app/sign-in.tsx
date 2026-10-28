@@ -19,33 +19,49 @@ import { KeyboardAvoidingView } from "react-native";
 export default function SignInScreen() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [apiMessage, setApiMessage] = useState("Not tested yet");
+  const [apiLoading, setApiLoading] = useState(false);
+
+  async function testBackend() {
+    setApiLoading(true);
+    setApiMessage("Connecting to backend...");
+
+    try {
+      const response = await fetch("http://127.0.0.1:5000/api/example/");
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(`HTTP error: ${response.status}`);
+      }
+
+      setApiMessage(
+        data.exampleData ?? "Connected, but response was unexpected",
+      );
+    } catch (error) {
+      console.error("Backend test failed:", error);
+      setApiMessage("Connection failed. Check the browser console.");
+    } finally {
+      setApiLoading(false);
+    }
+  }
 
   function handleSignIn() {
-    // Warning: I have temporatily added an automatic redirect to the Find Drivers tab for demonstration purposes. This will be removed when authentication is implemented.
+    // Temporary redirect for demonstration until authentication is implemented.
     router.replace("/(app)/find-drivers");
 
-    // Uncomment the following code when authentication is implemented.
-    /*if (!email.trim() || !password) {
-      Alert.alert(
-        'Missing details',
-        'Please enter your email and password.'
-      );
-      return;
-    }
-
-    Alert.alert(
-      'Preview only',
-      'Authentication will be connected later.'
-    );*/
+    // Authentication validation will be implemented later.
   }
 
   return (
-    // Why there are two SafeAreaViews: https://stackoverflow.com/a/52458846
     <Fragment>
       <StatusBar barStyle="light-content" backgroundColor={colors.secondary} />
       <SafeAreaView style={{ flex: 0, backgroundColor: colors.secondary }} />
+
       <View style={{ flex: 1, backgroundColor: colors.secondary }}>
-        <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : undefined}  style={{ flex: 1 }}>
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : undefined}
+          style={{ flex: 1 }}
+        >
           <View style={styles.titleContainer}>
             <Text style={styles.title}>Lion Lift</Text>
             <Text style={styles.subtitle}>PENN STATE ABINGTON</Text>
@@ -80,12 +96,22 @@ export default function SignInScreen() {
                     "Password recovery will be added later.",
                   )
                 }
-              ></SmallButton>
+              />
             </View>
 
             <BigButton text="Sign in" onPress={handleSignIn} />
 
             <Divider />
+
+            <BigButton
+              text="Test Backend"
+              onPress={testBackend}
+              borderOnly={true}
+            />
+
+            <Text style={{ textAlign: "center", marginVertical: 12 }}>
+              Backend status: {apiLoading ? "Testing..." : apiMessage}
+            </Text>
 
             <BigButton
               text="Create account"
