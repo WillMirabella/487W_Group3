@@ -6,7 +6,11 @@
 
 import { View, StyleSheet, Text } from "react-native";
 import { colors } from "../constants/colors";
-import GradientText from "./gradient-text";
+import ContainedText from "./contained-text";
+import Separator from "./separator";
+import DaySchedule from "./schedule/day-schedule";
+import Divider from "./divider";
+import { shadowStyles } from "../constants/shadow";
 
 type Props = {
   expanded?: boolean;
@@ -15,19 +19,19 @@ type Props = {
 export default function UserCard({ expanded=false }: Props) {
   return (
     <View style={styles.card} accessibilityRole="button">
-        <View style={{ flexDirection: "row" }} accessibilityRole="button">
+        <View style={{ flexDirection: "row" }}>
             <View style={styles.profilePicture}/>
-            <View>
-                <Text style={styles.heading}>Alex Hanna</Text>
-
-                {/* This is extremely temporary and I am not completely sure what should go here and how it should be displayed */}
-                <Text style={styles.subheading}>{String(Math.round(Math.random() * 10))} miles away</Text>
-                <View style={{ flexDirection: "row" }}>
-                  <GradientText>{String(Math.round(Math.random() * 100))}</GradientText>
-                  <Text style={styles.subheading}>% match</Text>
-                </View>
+            <View style={{ flex: 1, justifyContent: "space-between" }}>
+                <Text style={styles.heading}>Placholder Name</Text>
+                <ContainedText fontSize={16}>75% match</ContainedText>      
+                <Text style={styles.subheading}>20 <Separator /> Male</Text>
+                <Text style={[styles.subheading, { color: colors.secondary }]}>4 miles away</Text>  
             </View>
         </View>
+
+        <Divider/>
+        <DaySchedule></DaySchedule>
+        
         {expanded && <View style={styles.map}></View>}
         
     </View>
@@ -42,15 +46,7 @@ const styles = StyleSheet.create({
     padding: 16,
     borderRadius: 24,
     marginVertical: 12,
-
-    // shadow
-    shadowColor: "black",
-    shadowRadius: 2,
-    shadowOffset: {
-        width: 0,
-        height: 0
-    },
-    shadowOpacity: .20
+    ...shadowStyles
   },
   profilePicture: {
     width: 100,
@@ -62,17 +58,18 @@ const styles = StyleSheet.create({
   map: {
     minHeight: 300,
     borderRadius: 8,
-    marginTop: 16,
+    marginTop: 12,
     backgroundColor: colors.border,
   },
   heading: {
     fontSize: 24,
-    fontWeight: "bold",
+    fontWeight: "700",
     color: colors.primary
   },
   subheading: {
-    fontSize: 18,
-    color: colors.primary
+    fontSize: 16,
+    fontWeight: "500",
+    color: colors.secondary
   }
 });
 
