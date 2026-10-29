@@ -17,7 +17,7 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 
 const API_URL = process.env.EXPO_PUBLIC_API_URL;
 
-export default function SignInScreen() {
+export default function VerifyCodeScreen() {
   const { email } = useLocalSearchParams();
   const [cooldown, setCooldown] = useState(60);
   const [errorText, setErrorText] = useState("");
@@ -126,36 +126,12 @@ export default function SignInScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    backgroundColor: colors.background,
-    margin: 0,
-  },
-  titleContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: colors.secondary,
-    paddingVertical: 24,
-  },
-  title: {
-    color: colors.background,
-    fontSize: 40,
-    fontWeight: "bold",
-    marginBottom: 8,
-  },
   sheet: {
     flex: 4,
     backgroundColor: colors.background,
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
     paddingHorizontal: 24,
-  },
-  subtitle: {
-    color: colors.accent,
-    fontSize: 16,
-    letterSpacing: 2,
   },
   heading: {
     color: colors.primary,

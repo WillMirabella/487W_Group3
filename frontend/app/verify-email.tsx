@@ -10,13 +10,12 @@ import {
 import { colors } from "../constants/colors";
 import CustomTextInput from "../components/custom-text-input";
 import BigButton from "../components/buttons/big-button";
-import Divider from "../components/divider";
 import { KeyboardAvoidingView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const API_URL = process.env.EXPO_PUBLIC_API_URL;
 
-export default function SignInScreen() {
+export default function VerifyEmailScreen() {
   const [email, setEmail] = useState("");
   const [errorText, setErrorText] = useState("");
 
@@ -95,36 +94,12 @@ export default function SignInScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    backgroundColor: colors.background,
-    margin: 0,
-  },
-  titleContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: colors.secondary,
-    paddingVertical: 24,
-  },
-  title: {
-    color: colors.background,
-    fontSize: 40,
-    fontWeight: "bold",
-    marginBottom: 8,
-  },
   sheet: {
     flex: 4,
     backgroundColor: colors.background,
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
     paddingHorizontal: 24,
-  },
-  subtitle: {
-    color: colors.accent,
-    fontSize: 16,
-    letterSpacing: 2,
   },
   heading: {
     color: colors.primary,
