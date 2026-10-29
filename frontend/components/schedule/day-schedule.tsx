@@ -9,6 +9,7 @@ export default function DaySchedule() {
         flexDirection: "row",
         justifyContent: "space-between",
         marginRight: -8,
+        marginTop: 16,
       }}
       accessibilityRole="button"
     >

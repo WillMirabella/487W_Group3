@@ -6,10 +6,7 @@
 
 import { View, StyleSheet, Text } from "react-native";
 import { colors } from "../constants/colors";
-import ContainedText from "./contained-text";
-import Separator from "./separator";
 import DaySchedule from "./schedule/day-schedule";
-import Divider from "./divider";
 import { shadowStyles } from "../constants/shadow";
 
 type Props = {
@@ -21,15 +18,13 @@ export default function UserCard({ expanded=false }: Props) {
     <View style={styles.card} accessibilityRole="button">
         <View style={{ flexDirection: "row" }}>
             <View style={styles.profilePicture}/>
-            <View style={{ flex: 1, justifyContent: "space-between" }}>
-                <Text style={styles.heading}>Placholder Name</Text>
-                <ContainedText fontSize={16}>75% match</ContainedText>      
-                <Text style={styles.subheading}>20 <Separator /> Male</Text>
-                <Text style={[styles.subheading, { color: colors.secondary }]}>4 miles away</Text>  
+            <View style={{ flex: 1, justifyContent: "space-between", marginVertical: 8 }}>
+                <Text style={styles.heading}>Placeholder Name</Text>
+                <Text style={styles.subheading}>4 miles away</Text> 
+                <Text style={styles.subheading}>99% match</Text>     
             </View>
         </View>
 
-        <Divider/>
         <DaySchedule></DaySchedule>
         
         {expanded && <View style={styles.map}></View>}
@@ -58,7 +53,7 @@ const styles = StyleSheet.create({
   map: {
     minHeight: 300,
     borderRadius: 8,
-    marginTop: 12,
+    marginTop: 16,
     backgroundColor: colors.border,
   },
   heading: {
@@ -67,7 +62,7 @@ const styles = StyleSheet.create({
     color: colors.primary
   },
   subheading: {
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: "500",
     color: colors.secondary
   }
