@@ -47,10 +47,17 @@ export default function SignInScreen() {
         console.log(result['error']);
       }
       else{
-        router.replace({
-          pathname: '/verify-code',
-          params: { email: email },
-        });
+        if(result['status']=="already_verified"){
+          router.replace({
+            pathname: '/already-exists',
+            params: { email: email },
+          });
+        }else{
+          router.replace({
+            pathname: '/verify-code',
+            params: { email: email },
+          });
+        }
       }
     } catch (error) {
       console.error('Error submitting data:', error);
@@ -75,12 +82,10 @@ export default function SignInScreen() {
             {errorText.length > 0 && (
                <Text style={styles.errorText}>{errorText}</Text>
             )}
-            <Divider />
 
             <BigButton
               text="Send Verification Email"
               onPress={() => handleSendCode()}
-              borderOnly={true}
             />
           </View>
         </KeyboardAvoidingView>
